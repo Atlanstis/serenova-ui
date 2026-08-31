@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+.output
+pnpm-lock.yaml
+public
+*.min.*

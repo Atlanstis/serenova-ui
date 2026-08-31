@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build and test output
+dist/
+coverage/
+.output/
+
+# Local environment files
+.env.local
+.env.*.local
+*.local
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Editor and operating system files
+.idea/
+.DS_Store
+*.sw?
+
+# TypeScript incremental build information
+*.tsbuildinfo
