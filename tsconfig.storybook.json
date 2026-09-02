@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    ".storybook/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx"
+  ],
+  "exclude": [
+    "dist/**",
+    "node_modules/**",
+    "src/**/*.spec.*",
+    "src/**/*.test.*",
+    "tests/**",
+    "storybook-static*/**"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "serenova-ui": ["./src/index.ts"],
+      "serenova-ui/style.css": ["./src/styles/index.css"]
+    }
+  }
+}

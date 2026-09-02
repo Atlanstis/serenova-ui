@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.test.json",
+  "include": ["../src/**/*.ts", "../src/**/*.tsx", "../src/**/*.vue", "./**/*.ts", "./**/*.vue"],
+  "exclude": [
+    "../dist/**",
+    "../node_modules/**",
+    "../.storybook/**",
+    "../src/**/*.stories.*",
+    "./package/**"
+  ]
+}

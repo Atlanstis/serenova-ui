@@ -4,5 +4,9 @@ coverage
 .output
 pnpm-lock.yaml
 public
+playwright-report
+test-results
+storybook-static
+storybook-static-dist
 *.min.*
 .agents

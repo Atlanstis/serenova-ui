@@ -7,7 +7,17 @@ import tseslint from 'typescript-eslint'
 export default [
   {
     name: 'serenova/ignores',
-    ignores: ['dist/**', 'coverage/**', '.output/**', 'public/**', '**/*.min.*'],
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      '.output/**',
+      'public/**',
+      'storybook-static/**',
+      'storybook-static-dist/**',
+      'playwright-report/**',
+      'test-results/**',
+      '**/*.min.*',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
@@ -32,9 +42,20 @@ export default [
   },
   {
     name: 'serenova/node-files',
-    files: ['*.config.{js,mjs,cjs,ts,mts,cts}', 'scripts/**/*.{js,mjs,cjs,ts,mts,cts}'],
+    files: [
+      '*.config.{js,mjs,cjs,ts,mts,cts}',
+      'scripts/**/*.{js,mjs,cjs,ts,mts,cts}',
+      'tests/package/**/*.{js,mjs,cjs,ts,mts,cts}',
+    ],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  {
+    name: 'serenova/test-files',
+    files: ['**/*.{spec,test}.{js,mjs,cjs,ts,mts,cts,tsx}'],
+    rules: {
+      'vue/one-component-per-file': 'off',
     },
   },
   eslintConfigPrettier,

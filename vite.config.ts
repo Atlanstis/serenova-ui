@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: 'src/index.ts',
+      entry: 'src/bundle-entry.ts',
       name: 'SerenovaUI',
       formats: ['es', 'cjs'],
       fileName: (format) => (format === 'es' ? 'serenova-ui.js' : 'serenova-ui.cjs'),

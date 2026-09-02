@@ -1,7 +1,14 @@
 {
   "extends": ["./tsconfig.json", "@vue/tsconfig/tsconfig.lib.json"],
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["src/**/*.spec.*", "src/**/*.test.*"],
+  "exclude": [
+    "src/**/*.stories.*",
+    "src/**/*.spec.*",
+    "src/**/*.test.*",
+    "src/bundle-entry.ts",
+    ".storybook/**",
+    "tests/**"
+  ],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"
