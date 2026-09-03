@@ -13,6 +13,10 @@ const resets = shallowRef(0)
   <div>
     <Button data-testid="disabled-target" disabled>禁用按钮</Button>
     <Button data-testid="loading-target" loading>加载按钮</Button>
+    <Button data-testid="primary-target" variant="primary">主要按钮</Button>
+    <Button data-testid="small-target" size="small">小型按钮</Button>
+    <Button data-testid="medium-target" size="medium">中型按钮</Button>
+    <Button data-testid="large-target" size="large">大型按钮</Button>
 
     <div data-testid="block-container" style="width: 320px">
       <Button data-testid="block-target" block>块级按钮</Button>

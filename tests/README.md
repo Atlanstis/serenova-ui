@@ -1,32 +1,58 @@
-# 测试范围与目录约定
+# 测试工作区与组件测试基准
 
-本目录集中保存仓库的自动化测试、Fixture、截图基线和测试辅助。组件实现与 Story 保留在 `src/`，测试按验证层级组织，再按组件或共享领域拆分。
+本目录集中保存自动化测试、局部 Fixture、包消费样例和共享测试基础设施。组件实现与 Story 保留在 `src/`，测试按组件或系统职责聚合，运行环境通过文件后缀标识。
 
-## 功能范围
+## 目录结构
 
-| 目录       | 运行器                              | 职责边界                                                                                      | 当前覆盖                                                   |
-| ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `unit/`    | Vitest + happy-dom + Vue Test Utils | 快速验证公共 Props、Slots、Events、渲染输出、状态变化、类型与纯逻辑；不依赖真实布局和计算样式 | Button 公共行为、公共类型、组件/插件导出、`withInstall`    |
-| `browser/` | Vitest Browser Mode + Chromium      | 验证 DOM 模拟环境无法可靠覆盖的原生表单、布局和计算样式                                       | Button 禁用/加载、submit/reset、block 宽度                 |
-| `preview/` | Playwright + Storybook              | 验证 Story 自动发现、全局参数、视口和 `play` 交互，保证预览环境可用于开发与文档               | Button Stories、主题、RTL、移动端视口、交互结果            |
-| `visual/`  | Playwright 截图断言                 | 对稳定且有回归价值的状态矩阵做视觉比较；不替代行为断言                                        | Button 视觉变体、尺寸与状态矩阵                            |
-| `package/` | Node.js + TypeScript                | 构建后从使用者视角验证 `dist`、导出映射和 npm 包内容；不读取组件内部实现                      | ESM、CommonJS、CSS、声明、默认插件、具名组件、Vue external |
+```text
+tests/
+├── components/                    # 公共组件测试与局部 Fixture
+│   └── <component>/
+│       ├── behavior.unit.spec.ts
+│       ├── native.browser.spec.ts
+│       └── fixtures/
+├── shared/                        # 共享源码测试
+├── integration/storybook/         # Storybook 预览集成测试
+├── contracts/package/             # 构建产物与包消费契约
+├── support/
+│   ├── vitest/                    # Vitest setup
+│   └── playwright/                # Playwright helper
+└── tsconfig.json                  # 测试 TypeScript 项目
+```
 
-`helpers/` 保存跨 Playwright 测试复用的纯辅助，`setup/` 保存 Vitest 环境初始化。只服务单个测试文件的 Fixture 应与该测试共置，例如 `browser/button/ButtonBrowserFixture.vue`。
+| 目录           | 职责                                             | 当前覆盖                                        |
+| -------------- | ------------------------------------------------ | ----------------------------------------------- |
+| `components/`  | 按公共组件聚合快速测试、浏览器测试和局部 Fixture | Button 行为、类型、导出、原生行为与关键计算样式 |
+| `shared/`      | 验证共享源码公共契约                             | `withInstall`                                   |
+| `integration/` | 验证跨组件或开发环境集成                         | Storybook 发现、主题、RTL、视口和 `play` 交互   |
+| `contracts/`   | 从外部使用者视角验证构建产物                     | ESM、CommonJS、CSS、声明、插件和 Vue external   |
+| `support/`     | 保存跨领域复用的 setup 与 helper                 | Vitest 环境初始化和 Storybook URL 辅助          |
 
-`tests/tsconfig.json` 是唯一的测试 TypeScript 项目，继承根 `tsconfig.json` 的编译基线与源码别名，并同时覆盖测试文件和 Vite、Vitest、Playwright 配置。编辑器可在测试目录就近发现它，命令行通过 `pnpm type-check:test` 使用同一配置。测试 API 均从对应运行器显式导入，不依赖 Vitest 全局类型。
+`tests/tsconfig.json` 是唯一的测试 TypeScript 项目，继承根 `tsconfig.json` 的编译基线与源码别名，并覆盖测试文件、Vue Fixture 和 Vite、Vitest、Playwright 配置。包消费 Fixture 由包冒烟脚本使用独立 TypeScript 命令验证。
 
-`vitest.config.ts` 统一定义 `unit` 和 `browser` 两个命名项目，共享 Vue 插件与源码别名；`pnpm test:unit` 和 `pnpm test:browser` 分别选择对应项目。根目录 `vite.config.ts` 独立负责组件库构建，继续由 Vite 自动读取。
+## 文件命名与运行器
 
-## 用例放置规则
+| 后缀                | 运行器                              | 验证目标                                                    |
+| ------------------- | ----------------------------------- | ----------------------------------------------------------- |
+| `*.unit.spec.ts`    | Vitest + happy-dom + Vue Test Utils | 公共 Props、Slots、Events、渲染结果、状态变化、类型和纯逻辑 |
+| `*.browser.spec.ts` | Vitest Browser Mode + Chromium      | 原生 DOM 行为、焦点、键盘、布局、视口和计算样式             |
+| `*.preview.spec.ts` | Playwright + Storybook              | Story 发现、预览参数和 `play` 交互集成                      |
+| `*.fixture.*`       | 对应测试或脚本                      | 局部渲染载体与消费样例                                      |
 
-- 所有自动化测试统一放在 `tests/`，不在 `src/` 下创建 `tests` 或 `__tests__` 目录。
-- 单元测试使用 `tests/unit/<领域>/*.spec.ts`；真实浏览器组件测试使用 `tests/browser/<领域>/*.browser.spec.ts`。
-- Playwright 只发现 `preview/` 和 `visual/`，不会误执行 Vitest 用例。
-- 优先断言用户可观察的输出、事件和语义；不访问组件内部响应式状态或私有方法。
-- 所有异步交互都等待 `trigger`、`setValue` 或浏览器操作完成；外部 Promise 使用 `flushPromises`。
-- 完整 HTML 快照不能作为正确性的唯一证据；视觉截图仅覆盖稳定状态，并与行为测试配套。
-- 新增公共组件时，至少补充 `unit/<组件>`；涉及真实浏览器行为时补充 `browser/<组件>`；稳定视觉状态再进入对应 Playwright 层。
+`vitest.config.ts` 使用两个命名 project 按后缀发现 unit 与 browser 用例；`playwright.config.ts` 发现 preview 用例。测试 API 必须从对应运行器显式导入。
+
+## 组件测试基准
+
+- 新增或修改公共组件时，必须从该组件自身的 Props、默认值、Slots、Events、渲染结果、状态变化、边界条件和公共导出推导测试范围。
+- 每个公共组件必须具有 `components/<组件领域>/*.unit.spec.ts` 快速黑盒测试。
+- 公共契约涉及原生表单、焦点与键盘、浏览器事件、Teleport、滚动与溢出、响应式布局、元素尺寸或计算样式时，必须增加 `*.browser.spec.ts`。
+- 公共出口或类型发生变化时，必须同步更新源码出口测试和 `contracts/package/package-consumer.fixture.ts`。
+- 单个组件或用例使用的 Fixture 必须与所属测试共置；跨领域复用的资产必须提升到 `support/`。
+- 所有异步交互必须等待 `trigger`、`setValue` 或浏览器操作完成；外部 Promise 必须使用 `flushPromises` 等待完成。
+- 结构快照投入使用时必须与明确行为断言配套。
+- 组件任务完成前必须运行测试类型检查和受影响的质量命令，并记录测试层选择与验证结果。
+
+当前视觉契约由 Vitest Browser Mode 中聚焦的布局、尺寸和计算样式断言验证。未来恢复截图回归时，必须具备稳定组件视觉、版本化基线、固定浏览器与渲染环境，以及明确的差异审查流程。
 
 ## 运行入口
 
@@ -34,8 +60,7 @@
 pnpm test:unit
 pnpm test:browser
 pnpm test:preview
-pnpm test:visual
 pnpm test:package
 ```
 
-`pnpm test:e2e` 汇总 Storybook 预览和视觉回归；`pnpm quality` 执行发布前完整质量门槛。视觉基线仅在确认变更符合预期后更新。
+`pnpm test:e2e` 是 `pnpm test:preview` 的兼容别名。`pnpm quality` 执行类型检查、unit、browser、preview、Storybook 构建和 package 冒烟组成的发布前完整质量门槛。

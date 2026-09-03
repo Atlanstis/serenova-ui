@@ -7,7 +7,7 @@ import { dirname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const packageTestRoot = dirname(fileURLToPath(import.meta.url))
-const repositoryRoot = resolve(packageTestRoot, '../..')
+const repositoryRoot = resolve(packageTestRoot, '../../..')
 const packageJsonPath = resolve(repositoryRoot, 'package.json')
 const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
 const packageName = packageJson.name
@@ -57,7 +57,7 @@ const declarations = await readFile(typePath, 'utf8')
 assert.doesNotMatch(declarations, /styles\/index\.css/, '声明入口包含无法发布的内部样式路径。')
 
 const typeScriptCompiler = require.resolve('typescript/bin/tsc')
-const sourceConsumerFixture = resolve(packageTestRoot, 'package-consumer.ts')
+const sourceConsumerFixture = resolve(packageTestRoot, 'package-consumer.fixture.ts')
 const packOutput = execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
   cwd: repositoryRoot,
   encoding: 'utf8',

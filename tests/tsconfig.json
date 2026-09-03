@@ -10,7 +10,12 @@
     "../vitest.config.ts",
     "../playwright.config.ts"
   ],
-  "exclude": ["../src/**/*.stories.*", "../src/**/*.spec.*", "../src/**/*.test.*", "./package/**"],
+  "exclude": [
+    "../src/**/*.stories.*",
+    "../src/**/*.spec.*",
+    "../src/**/*.test.*",
+    "./contracts/package/**"
+  ],
   "compilerOptions": {
     "noEmit": true,
     "types": ["node", "vite/client"]

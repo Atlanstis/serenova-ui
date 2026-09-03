@@ -71,28 +71,25 @@ src/
 ├── components.ts       # 全量安装组件清单
 └── index.ts            # 公共 API
 .storybook/             # Storybook 全局配置
-tests/                  # 全部自动化测试、Fixture 与测试辅助
-├── unit/               # happy-dom 快速行为与公共类型测试
-├── browser/            # Chromium 真实浏览器组件测试
-├── preview/            # Storybook 集成与交互测试
-├── visual/             # 视觉回归测试及截图基线
-├── package/            # dist 发布产物消费冒烟测试
-├── helpers/            # 跨测试层共享辅助
-└── setup/              # Vitest 测试环境初始化
+tests/                  # 自动化测试与测试基础设施工作区
+├── components/         # 按公共组件聚合测试与局部 Fixture
+├── shared/             # 共享源码测试
+├── integration/        # Storybook 等跨组件集成测试
+├── contracts/          # dist 发布产物消费契约
+└── support/            # 跨领域共享 setup 与 helper
 ```
 
-新增公共组件时应沿用源码领域结构，并由 `src/components.ts` 汇总全量安装列表；对应测试统一放在 `tests/<测试层>/<组件领域>/`，不在 `src/` 下新增测试目录。公共组件默认使用 `<script setup lang="ts">`、Template 和 scoped CSS；仅在递归、Schema 或高度动态 VNode 场景下考虑内部 TSX。
+新增公共组件时应沿用源码领域结构，并由 `src/components.ts` 汇总全量安装列表；对应测试统一放在 `tests/components/<组件领域>/`，使用文件后缀标识运行环境。公共组件默认使用 `<script setup lang="ts">`、Template 和 scoped CSS；仅在递归、Schema 或高度动态 VNode 场景下考虑内部 TSX。
 
 ## 质量验证
 
-| 层级               | 目录            | 命令                | 覆盖范围                                             |
-| ------------------ | --------------- | ------------------- | ---------------------------------------------------- |
-| 快速组件测试       | `tests/unit`    | `pnpm test:unit`    | Props、Slots、Events、状态、公共类型和安装辅助       |
-| 真实浏览器组件测试 | `tests/browser` | `pnpm test:browser` | 表单、布局和计算样式                                 |
-| Storybook 预览测试 | `tests/preview` | `pnpm test:preview` | Story 发现、参数、主题、RTL、视口和 `play` 交互      |
-| 视觉回归           | `tests/visual`  | `pnpm test:visual`  | 固定 Chromium、视口、时区、字体和动画策略下的截图    |
-| 全部 Playwright    | 上述两类        | `pnpm test:e2e`     | 单次启动 Storybook 后运行预览和视觉测试              |
-| 发布产物冒烟       | `tests/package` | `pnpm test:package` | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
+| 层级                | 目录                          | 命令                | 覆盖范围                                             |
+| ------------------- | ----------------------------- | ------------------- | ---------------------------------------------------- |
+| 快速组件测试        | `tests/components`、`shared`  | `pnpm test:unit`    | Props、Slots、Events、状态、公共类型和安装辅助       |
+| 真实浏览器组件测试  | `tests/components`            | `pnpm test:browser` | 原生行为、焦点、键盘、布局、尺寸和计算样式           |
+| Storybook 预览测试  | `tests/integration/storybook` | `pnpm test:preview` | Story 发现、参数、主题、RTL、视口和 `play` 交互      |
+| Playwright 兼容入口 | 同预览测试                    | `pnpm test:e2e`     | 委托 Storybook 预览集成测试                          |
+| 发布产物冒烟        | `tests/contracts/package`     | `pnpm test:package` | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
 
 各测试层的职责边界、当前覆盖项与新增用例约定详见 [`tests/README.md`](./tests/README.md)。
 
@@ -106,13 +103,6 @@ pnpm check
 
 ```bash
 pnpm quality
-```
-
-视觉基线与对应测试文件共置在 `tests/visual/**/*.spec.ts-snapshots/`。仅在确认视觉变更符合预期后更新：
-
-```bash
-pnpm exec playwright test --config playwright.config.ts tests/visual --update-snapshots
-pnpm test:visual
 ```
 
 ## 构建与产物

@@ -45,7 +45,7 @@ export default [
     files: [
       '*.config.{js,mjs,cjs,ts,mts,cts}',
       'scripts/**/*.{js,mjs,cjs,ts,mts,cts}',
-      'tests/package/**/*.{js,mjs,cjs,ts,mts,cts}',
+      'tests/contracts/package/**/*.{js,mjs,cjs,ts,mts,cts}',
     ],
     languageOptions: {
       globals: globals.node,

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { buttonStoryIds, storyUrl } from '../helpers/storybook'
+import { buttonStoryIds, storyUrl } from '../../support/playwright/storybook'
 
 test('自动发现 Button Stories，并通过参数链接复现主题、RTL 与移动端环境', async ({
   page,
