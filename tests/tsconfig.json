@@ -1,11 +1,18 @@
 {
-  "extends": "../tsconfig.test.json",
-  "include": ["../src/**/*.ts", "../src/**/*.tsx", "../src/**/*.vue", "./**/*.ts", "./**/*.vue"],
-  "exclude": [
-    "../dist/**",
-    "../node_modules/**",
-    "../.storybook/**",
-    "../src/**/*.stories.*",
-    "./package/**"
-  ]
+  "extends": "../tsconfig.json",
+  "include": [
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "../src/**/*.vue",
+    "./**/*.ts",
+    "./**/*.vue",
+    "../vite.config.ts",
+    "../vitest.config.ts",
+    "../playwright.config.ts"
+  ],
+  "exclude": ["../src/**/*.stories.*", "../src/**/*.spec.*", "../src/**/*.test.*", "./package/**"],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node", "vite/client"]
+  }
 }

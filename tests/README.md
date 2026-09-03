@@ -14,7 +14,9 @@
 
 `helpers/` 保存跨 Playwright 测试复用的纯辅助，`setup/` 保存 Vitest 环境初始化。只服务单个测试文件的 Fixture 应与该测试共置，例如 `browser/button/ButtonBrowserFixture.vue`。
 
-`tests/tsconfig.json` 是编辑器可自动发现的测试 TypeScript 项目，继承根目录 `tsconfig.test.json` 的别名和测试类型配置；命令行测试类型检查仍统一执行 `pnpm type-check:test`。
+`tests/tsconfig.json` 是唯一的测试 TypeScript 项目，继承根 `tsconfig.json` 的编译基线与源码别名，并同时覆盖测试文件和 Vite、Vitest、Playwright 配置。编辑器可在测试目录就近发现它，命令行通过 `pnpm type-check:test` 使用同一配置。测试 API 均从对应运行器显式导入，不依赖 Vitest 全局类型。
+
+`vitest.config.ts` 统一定义 `unit` 和 `browser` 两个命名项目，共享 Vue 插件与源码别名；`pnpm test:unit` 和 `pnpm test:browser` 分别选择对应项目。根目录 `vite.config.ts` 独立负责组件库构建，继续由 Vite 自动读取。
 
 ## 用例放置规则
 
