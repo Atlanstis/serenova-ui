@@ -3,7 +3,7 @@ import { shallowRef } from 'vue'
 
 import Button from '@/button/src/Button.vue'
 
-defineOptions({ name: 'ButtonBrowserFixture' })
+defineOptions({ name: 'ButtonIntegrationFixture' })
 
 const submits = shallowRef(0)
 const resets = shallowRef(0)

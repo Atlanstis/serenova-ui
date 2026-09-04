@@ -18,6 +18,11 @@
   ],
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node", "vite/client"]
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["../src/*"],
+      "serenova-ui": ["../src/index.ts"],
+      "serenova-ui/style.css": ["../src/styles/index.css"]
+    }
   }
 }

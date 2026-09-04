@@ -69,9 +69,9 @@ src/
 └── index.ts            # 公共 API
 .storybook/             # Storybook 全局配置
 tests/                  # 自动化测试与测试基础设施工作区
-├── components/         # 按公共组件聚合测试与局部 Fixture
+├── components/         # 按公共组件聚合单元、集成测试与局部 Fixture
 ├── shared/             # 共享源码测试
-├── integration/        # Storybook 等跨组件集成测试
+├── e2e/                # 基于 dist 的消费应用与代表性用户流程
 ├── contracts/          # dist 发布产物消费契约
 └── support/            # 跨领域共享 setup 与 helper
 ```
@@ -89,7 +89,7 @@ tests/                  # 自动化测试与测试基础设施工作区
 | 开发   | `pnpm dev`                  | 启动源码 Storybook，用于组件预览、文档查阅和交互调试    |
 | 构建   | `pnpm build`                | 检查组件库源码类型并生成 JavaScript、CSS 和类型声明产物 |
 | 聚合   | `pnpm check`                | 运行格式、Lint、完整类型检查和快速单元测试，适合提交前  |
-| 聚合   | `pnpm quality`              | 在 `check` 基础上运行浏览器、预览和发布包验证           |
+| 聚合   | `pnpm quality`              | 在 `check` 基础上运行集成、E2E 和发布包验证             |
 | 格式   | `pnpm format`               | 使用 Prettier 写入统一格式                              |
 | 格式   | `pnpm format:check`         | 检查 Prettier 格式但不修改文件                          |
 | 代码   | `pnpm lint`                 | 运行 ESLint，任何警告均视为失败                         |
@@ -100,8 +100,8 @@ tests/                  # 自动化测试与测试基础设施工作区
 | 类型   | `pnpm type-check:test`      | 仅检查测试工作区类型                                    |
 | 测试   | `pnpm test`                 | npm 标准测试入口，委托快速单元测试                      |
 | 测试   | `pnpm test:unit`            | 运行 happy-dom 中的快速组件黑盒与共享逻辑测试           |
-| 测试   | `pnpm test:browser`         | 在 Chromium 中验证原生行为、焦点、布局和计算样式        |
-| 测试   | `pnpm test:preview`         | 启动开发 Storybook 并运行 Playwright 预览集成测试       |
+| 测试   | `pnpm test:integration`     | 在 Chromium 中验证原生行为、焦点、布局和组件协作        |
+| 测试   | `pnpm test:e2e`             | 构建组件库并在最小消费应用中运行代表性 Playwright 流程  |
 | 测试   | `pnpm test:package`         | 先构建，再验证发布包入口、类型、样式、导出和文件边界    |
 | 发布   | `pnpm pack:check`           | 构建并展示 `npm pack --dry-run` 文件清单                |
 | 发布   | `pnpm publish:dry-run`      | 模拟 npm 发布流程，不上传包                             |
@@ -110,14 +110,16 @@ tests/                  # 自动化测试与测试基础设施工作区
 
 ### 测试分层
 
-| 层级               | 目录                          | 命令                | 覆盖范围                                             |
-| ------------------ | ----------------------------- | ------------------- | ---------------------------------------------------- |
-| 快速组件测试       | `tests/components`、`shared`  | `pnpm test:unit`    | Props、Slots、Events、状态、公共类型和安装辅助       |
-| 真实浏览器组件测试 | `tests/components`            | `pnpm test:browser` | 原生行为、焦点、键盘、布局、尺寸和计算样式           |
-| Storybook 预览测试 | `tests/integration/storybook` | `pnpm test:preview` | Story 发现、参数、主题、RTL、视口和 `play` 交互      |
-| 发布产物冒烟       | `tests/contracts/package`     | `pnpm test:package` | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
+| 层级                 | 目录                         | 命令                    | 覆盖范围                                             |
+| -------------------- | ---------------------------- | ----------------------- | ---------------------------------------------------- |
+| 快速单元测试         | `tests/components`、`shared` | `pnpm test:unit`        | Props、Slots、Events、状态、公共类型和安装辅助       |
+| 真实浏览器集成测试   | `tests/components`           | `pnpm test:integration` | 原生行为、焦点、键盘、布局、尺寸、样式和组件协作     |
+| 消费应用 E2E         | `tests/e2e`                  | `pnpm test:e2e`         | 当前 dist 的公共安装、样式加载和代表性关键用户流程   |
+| 独立发布产物契约测试 | `tests/contracts/package`    | `pnpm test:package`     | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
 
 各测试层的职责边界、当前覆盖项与新增用例约定详见 [`tests/README.md`](./tests/README.md)。
+
+每个公共组件必须具有快速黑盒单元测试；只有公共契约依赖真实浏览器行为、布局或组件协作时才增加集成测试。E2E 按代表性用户流程组织，不要求每个组件单独具有 E2E。Storybook 仅用于开发预览、交互调试和组件文档，不属于自动化测试金字塔。
 
 运行快速检查：
 

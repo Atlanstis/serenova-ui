@@ -25,7 +25,7 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          name: 'browser',
+          name: 'integration',
           browser: {
             enabled: true,
             headless: true,
@@ -39,8 +39,8 @@ export default defineConfig({
             instances: [{ browser: 'chromium' }],
             viewport: { height: 720, width: 1280 },
           },
-          include: ['tests/**/*.browser.spec.ts'],
-          setupFiles: ['./tests/support/vitest/browser.setup.ts'],
+          include: ['tests/**/*.integration.spec.ts'],
+          setupFiles: ['./tests/support/vitest/integration.setup.ts'],
         },
       },
     ],

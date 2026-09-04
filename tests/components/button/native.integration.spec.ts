@@ -2,10 +2,10 @@ import { expect, test } from 'vitest'
 import { render } from 'vitest-browser-vue'
 
 import '@/styles/index.css'
-import ButtonBrowserFixture from './fixtures/ButtonBrowser.fixture.vue'
+import ButtonIntegrationFixture from './fixtures/ButtonIntegration.fixture.vue'
 
 test('禁用和加载状态阻止交互', async () => {
-  const screen = await render(ButtonBrowserFixture)
+  const screen = await render(ButtonIntegrationFixture)
   const disabled = screen.getByTestId('disabled-target')
   const loading = screen.getByTestId('loading-target')
 
@@ -26,7 +26,7 @@ test('禁用和加载状态阻止交互', async () => {
 })
 
 test('保留 submit 和 reset 的原生表单行为', async () => {
-  const screen = await render(ButtonBrowserFixture)
+  const screen = await render(ButtonIntegrationFixture)
 
   await screen.getByTestId('submit-target').click()
   await expect.element(screen.getByTestId('submit-count')).toHaveTextContent('1')
@@ -36,7 +36,7 @@ test('保留 submit 和 reset 的原生表单行为', async () => {
 })
 
 test('块级按钮采用容器可用宽度', async () => {
-  const screen = await render(ButtonBrowserFixture)
+  const screen = await render(ButtonIntegrationFixture)
   const container = screen.getByTestId('block-container').element()
   const button = screen.getByTestId('block-target').element()
 
@@ -45,7 +45,7 @@ test('块级按钮采用容器可用宽度', async () => {
 })
 
 test('解析公共变体与尺寸的计算样式', async () => {
-  const screen = await render(ButtonBrowserFixture)
+  const screen = await render(ButtonIntegrationFixture)
   const primaryStyle = getComputedStyle(screen.getByTestId('primary-target').element())
 
   expect(primaryStyle.backgroundColor).toBe('rgb(21, 94, 239)')
