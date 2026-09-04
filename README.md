@@ -47,16 +47,13 @@ pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 ```
 
-| 命令                        | 用途                                       |
-| --------------------------- | ------------------------------------------ |
-| `pnpm dev`                  | 启动源码模式 Storybook，支持 Vite HMR      |
-| `pnpm dev:dist`             | 构建组件库并使用 `dist` 产物启动 Storybook |
-| `pnpm build:storybook`      | 构建源码模式静态站点                       |
-| `pnpm build:storybook:dist` | 构建基于发布产物的静态站点                 |
+```bash
+pnpm dev
+```
 
 Storybook 默认运行在 [http://localhost:6006](http://localhost:6006)，提供 Docs、Controls、Actions、Interactions、主题、RTL 和常见视口工具。
 
-源码模式和产物模式均通过 `serenova-ui` 与 `serenova-ui/style.css` 公共入口加载。产物模式根据 `package.json` 的 `exports` 解析文件，并阻止回退读取组件源码或源码样式。
+Storybook 仅用于开发过程的源码预览，通过 `serenova-ui` 与 `serenova-ui/style.css` 公共名称加载源码并支持 Vite HMR。发布产物由构建和包级冒烟测试独立验证。
 
 单个组件的 API、示例和交互说明统一由 Storybook Docs 与对应 Story 承载，README 只保留组件库级别的使用和维护信息。
 
@@ -83,13 +80,42 @@ tests/                  # 自动化测试与测试基础设施工作区
 
 ## 质量验证
 
-| 层级                | 目录                          | 命令                | 覆盖范围                                             |
-| ------------------- | ----------------------------- | ------------------- | ---------------------------------------------------- |
-| 快速组件测试        | `tests/components`、`shared`  | `pnpm test:unit`    | Props、Slots、Events、状态、公共类型和安装辅助       |
-| 真实浏览器组件测试  | `tests/components`            | `pnpm test:browser` | 原生行为、焦点、键盘、布局、尺寸和计算样式           |
-| Storybook 预览测试  | `tests/integration/storybook` | `pnpm test:preview` | Story 发现、参数、主题、RTL、视口和 `play` 交互      |
-| Playwright 兼容入口 | 同预览测试                    | `pnpm test:e2e`     | 委托 Storybook 预览集成测试                          |
-| 发布产物冒烟        | `tests/contracts/package`     | `pnpm test:package` | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
+### 命令总览
+
+命令按日常使用优先级排列；聚合入口优先用于常规工作，细分入口用于定位问题或验证特定层级。
+
+| 优先级 | 命令                        | 作用与适用时机                                          |
+| ------ | --------------------------- | ------------------------------------------------------- |
+| 开发   | `pnpm dev`                  | 启动源码 Storybook，用于组件预览、文档查阅和交互调试    |
+| 构建   | `pnpm build`                | 检查组件库源码类型并生成 JavaScript、CSS 和类型声明产物 |
+| 聚合   | `pnpm check`                | 运行格式、Lint、完整类型检查和快速单元测试，适合提交前  |
+| 聚合   | `pnpm quality`              | 在 `check` 基础上运行浏览器、预览和发布包验证           |
+| 格式   | `pnpm format`               | 使用 Prettier 写入统一格式                              |
+| 格式   | `pnpm format:check`         | 检查 Prettier 格式但不修改文件                          |
+| 代码   | `pnpm lint`                 | 运行 ESLint，任何警告均视为失败                         |
+| 代码   | `pnpm lint:fix`             | 自动修复 ESLint 可修复问题，并拒绝遗留警告              |
+| 类型   | `pnpm type-check`           | 聚合检查组件库、Storybook 和测试工作区                  |
+| 类型   | `pnpm type-check:lib`       | 仅检查组件库源码类型                                    |
+| 类型   | `pnpm type-check:storybook` | 仅检查 Storybook 配置与 Story 类型                      |
+| 类型   | `pnpm type-check:test`      | 仅检查测试工作区类型                                    |
+| 测试   | `pnpm test`                 | npm 标准测试入口，委托快速单元测试                      |
+| 测试   | `pnpm test:unit`            | 运行 happy-dom 中的快速组件黑盒与共享逻辑测试           |
+| 测试   | `pnpm test:browser`         | 在 Chromium 中验证原生行为、焦点、布局和计算样式        |
+| 测试   | `pnpm test:preview`         | 启动开发 Storybook 并运行 Playwright 预览集成测试       |
+| 测试   | `pnpm test:package`         | 先构建，再验证发布包入口、类型、样式、导出和文件边界    |
+| 发布   | `pnpm pack:check`           | 构建并展示 `npm pack --dry-run` 文件清单                |
+| 发布   | `pnpm publish:dry-run`      | 模拟 npm 发布流程，不上传包                             |
+| 钩子   | `pnpm prepublishOnly`       | npm 发布前自动执行完整 `quality`                        |
+| 钩子   | `pnpm prepare`              | 安装或更新 Husky Git hooks，通常由依赖安装过程自动调用  |
+
+### 测试分层
+
+| 层级               | 目录                          | 命令                | 覆盖范围                                             |
+| ------------------ | ----------------------------- | ------------------- | ---------------------------------------------------- |
+| 快速组件测试       | `tests/components`、`shared`  | `pnpm test:unit`    | Props、Slots、Events、状态、公共类型和安装辅助       |
+| 真实浏览器组件测试 | `tests/components`            | `pnpm test:browser` | 原生行为、焦点、键盘、布局、尺寸和计算样式           |
+| Storybook 预览测试 | `tests/integration/storybook` | `pnpm test:preview` | Story 发现、参数、主题、RTL、视口和 `play` 交互      |
+| 发布产物冒烟       | `tests/contracts/package`     | `pnpm test:package` | ESM、CommonJS、CSS 子路径、插件、公共类型和 npm 内容 |
 
 各测试层的职责边界、当前覆盖项与新增用例约定详见 [`tests/README.md`](./tests/README.md)。
 
@@ -122,7 +148,7 @@ dist/
 └── ...组件声明文件
 ```
 
-Vue 作为 `peerDependency` 从 JavaScript 产物中外置。构建后可单独验证发布产物：
+Vue 作为 `peerDependency` 从 JavaScript 产物中外置。可通过自带构建步骤的包级测试验证发布产物：
 
 ```bash
 pnpm test:package

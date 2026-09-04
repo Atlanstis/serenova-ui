@@ -7,8 +7,6 @@ coverage/
 .output/
 playwright-report/
 test-results/
-storybook-static/
-storybook-static-dist/
 
 # Local environment files
 .env.local

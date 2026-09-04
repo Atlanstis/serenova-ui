@@ -63,4 +63,4 @@ pnpm test:preview
 pnpm test:package
 ```
 
-`pnpm test:e2e` 是 `pnpm test:preview` 的兼容别名。`pnpm quality` 执行类型检查、unit、browser、preview、Storybook 构建和 package 冒烟组成的发布前完整质量门槛。
+Storybook 仅作为开发过程中的源码预览和 `pnpm test:preview` 的集成测试宿主，不生成或交付静态站点。`pnpm test:package` 会先构建组件库再验证发布产物；`pnpm quality` 复用快速 `check`，并继续执行 browser、preview 和 package 冒烟组成的发布前完整质量门槛。

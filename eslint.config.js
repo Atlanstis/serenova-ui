@@ -12,8 +12,6 @@ export default [
       'coverage/**',
       '.output/**',
       'public/**',
-      'storybook-static/**',
-      'storybook-static-dist/**',
       'playwright-report/**',
       'test-results/**',
       '**/*.min.*',

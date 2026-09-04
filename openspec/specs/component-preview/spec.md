@@ -2,32 +2,23 @@
 
 ## Purpose
 
-定义基于 Storybook 的组件开发工作台，使维护者既能快速调试源码、复现交互并查阅组件文档，也能在发布前以真实包入口检查构建产物与样式。
+定义基于 Storybook 的组件开发工作台，使维护者能够快速调试源码、复现交互、查阅组件文档，并通过预览集成测试验证开发环境。
 
 ## Requirements
 
 ### Requirement: 提供源码 HMR 预览
 
-Storybook SHALL 在源码模式下通过包公共名称解析到组件库源码，并 MUST 在组件或样式修改后提供热更新反馈。
+Storybook SHALL 仅作为开发过程中的源码预览工作台，通过包公共名称解析到组件库源码，并 MUST 在组件或样式修改后提供热更新反馈；仓库 MUST 提供单一、明确的开发命令启动该工作台。
 
 #### Scenario: 修改 Button 源码
 
-- **WHEN** 维护者启动源码 Storybook 并修改 `SButton` 的模板、逻辑或样式
+- **WHEN** 维护者启动 Storybook 开发预览并修改 `SButton` 的模板、逻辑或样式
 - **THEN** 当前 Story 在不重新构建 npm 包的情况下更新显示结果
 
-### Requirement: 提供构建产物预览
+#### Scenario: 启动开发预览
 
-Storybook MUST 提供产物模式，在启动前构建组件库，并通过 `package.json` 约定的根入口和样式子路径加载 `dist` 产物；产物模式 MUST 阻止组件实现与全局样式从源码路径回退加载。
-
-#### Scenario: 验证待发布产物
-
-- **WHEN** 维护者启动产物 Storybook
-- **THEN** Story 使用构建后的 JavaScript 和 CSS 正常渲染，而不是绕过公共入口读取组件内部文件
-
-#### Scenario: 产物缺少样式出口
-
-- **WHEN** `serenova-ui/style.css` 无法从构建产物解析
-- **THEN** 产物 Storybook 或其启动检查失败并明确暴露该发布问题
+- **WHEN** 维护者需要浏览组件文档或调试 Story 交互
+- **THEN** 维护者通过唯一的开发预览入口启动源码 Storybook，无需选择源码、产物或静态站点模式
 
 ### Requirement: Story 使用真实消费方式
 
