@@ -30,7 +30,28 @@
       "require": "./dist/serenova-ui.cjs"
     },
     "./style.css": "./dist/serenova-ui.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./button": {
+      "types": "./dist/components/button/index.d.ts",
+      "import": "./dist/button/index.js",
+      "require": "./dist/button/index.cjs"
+    },
+    "./theme-provider": {
+      "types": "./dist/components/theme-provider/index.d.ts",
+      "import": "./dist/theme-provider/index.js",
+      "require": "./dist/theme-provider/index.cjs"
+    },
+    "./themes/light": {
+      "types": "./dist/theme/presets/light.d.ts",
+      "import": "./dist/themes/light.js",
+      "require": "./dist/themes/light.cjs"
+    },
+    "./themes/dark": {
+      "types": "./dist/theme/presets/dark.d.ts",
+      "import": "./dist/themes/dark.js",
+      "require": "./dist/themes/dark.cjs"
+    },
+    "./button/style.css": "./dist/button/style.css"
   },
   "sideEffects": [
     "**/*.css"

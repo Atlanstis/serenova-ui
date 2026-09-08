@@ -16,11 +16,7 @@
 pnpm add serenova-ui
 ```
 
-无论全量安装还是按需导入，都需要显式引入样式：
-
-```ts
-import 'serenova-ui/style.css'
-```
+组件样式需显式导入：全量使用加载 `serenova-ui/style.css`，按需使用加载对应组件样式。
 
 ### 全量安装
 
@@ -36,7 +32,33 @@ createApp(App).use(SerenovaUI).mount('#app')
 
 ### 按需导入
 
-按需使用时，从 `serenova-ui` 包根导入需要的具名组件，并在业务组件中直接使用。可用组件、导出名称、API 与交互示例统一在 Storybook Docs 中查阅；样式入口仍需单独导入。
+从组件子路径导入组件及其样式，无需额外主题初始化：
+
+```ts
+import { SButton } from 'serenova-ui/button'
+import 'serenova-ui/button/style.css'
+```
+
+### 主题
+
+```vue
+<script setup lang="ts">
+import { SButton } from 'serenova-ui/button'
+import { SThemeProvider } from 'serenova-ui/theme-provider'
+import { darkPreset } from 'serenova-ui/themes/dark'
+import 'serenova-ui/button/style.css'
+</script>
+
+<template>
+  <SThemeProvider :preset="darkPreset">
+    <SButton variant="primary">保存</SButton>
+  </SThemeProvider>
+</template>
+```
+
+Provider 不增加 DOM；无 Provider 时使用默认浅色主题。预设可响应式切换，内层 `inherit=false` 恢复默认主题，`tokens` 支持共享与组件覆盖。公共 API 详见 Storybook Docs，完整实现规则见 [样式与主题规范](./docs/styling-and-theming.md)。
+
+**主题迁移：** 全量 CSS 不再写入全局 token 或处理 `[data-theme='dark']`。原暗色属性切换改为 Provider 的 `preset`，祖先 CSS 变量覆盖改为 `tokens`；普通业务页面的背景、文字和表单样式由应用管理。默认组件外观及全量样式路径保持可用。
 
 ## 本地开发
 
@@ -53,7 +75,7 @@ pnpm dev
 
 Storybook 默认运行在 [http://localhost:6006](http://localhost:6006)，提供 Docs、Controls、Actions、Interactions、主题、RTL 和常见视口工具。
 
-Storybook 仅用于开发过程的源码预览，通过 `serenova-ui` 与 `serenova-ui/style.css` 公共名称加载源码并支持 Vite HMR。发布产物由构建和包级冒烟测试独立验证。
+Storybook 仅用于开发过程的源码预览，通过组件公共名称映射加载源码，SFC 自身提供样式并支持 Vite HMR。发布产物由构建和包级冒烟测试独立验证。
 
 单个组件的 API、示例和交互说明统一由 Storybook Docs 与对应 Story 承载，README 只保留组件库级别的使用和维护信息。
 
@@ -61,12 +83,13 @@ Storybook 仅用于开发过程的源码预览，通过 `serenova-ui` 与 `seren
 
 ```text
 src/
-├── <component>/        # 按组件领域共置源码、Story 与公共入口
-├── shared/             # 共享安装辅助
-├── styles/             # 全局样式与设计令牌
-├── bundle-entry.ts     # Vite 构建入口
-├── components.ts       # 全量安装组件清单
-└── index.ts            # 公共 API
+├── components/         # 公共组件
+│   ├── button/         # src、theme、stories 与公共入口
+│   └── theme-provider/ # 无 DOM 主题组件、Story 与公共入口
+├── theme/              # 共享主题类型、上下文、合并与 presets
+├── shared/             # 跨领域内部辅助
+├── plugin.ts           # 全量组件安装
+└── index.ts            # 公共 API 出口
 .storybook/             # Storybook 全局配置
 tests/                  # 自动化测试与测试基础设施工作区
 ├── components/         # 按公共组件聚合单元、集成测试与局部 Fixture
@@ -76,7 +99,7 @@ tests/                  # 自动化测试与测试基础设施工作区
 └── support/            # 跨领域共享 setup 与 helper
 ```
 
-新增公共组件时应沿用源码领域结构，并由 `src/components.ts` 汇总全量安装列表；对应测试统一放在 `tests/components/<组件领域>/`，使用文件后缀标识运行环境。公共组件默认使用 `<script setup lang="ts">`、Template 和 scoped CSS；仅在递归、Schema 或高度动态 VNode 场景下考虑内部 TSX。
+新增公共组件时应沿用源码领域结构，组件放在 `src/components/`，并由 `src/plugin.ts` 汇总全量安装列表；对应测试统一放在 `tests/components/<组件领域>/`，使用文件后缀标识运行环境。公共组件默认使用 `<script setup lang="ts">`、Template 和 scoped CSS；仅在递归、Schema 或高度动态 VNode 场景下考虑内部 TSX。
 
 ## 质量验证
 
@@ -147,7 +170,10 @@ dist/
 ├── serenova-ui.cjs
 ├── serenova-ui.css
 ├── index.d.ts
-└── ...组件声明文件
+├── button/             # JS、CommonJS、声明与 style.css
+├── theme-provider/     # JS、CommonJS 与声明
+├── themes/             # 明暗预设与声明
+└── ...共享模块与内部 CSS 资产
 ```
 
 Vue 作为 `peerDependency` 从 JavaScript 产物中外置。可通过自带构建步骤的包级测试验证发布产物：

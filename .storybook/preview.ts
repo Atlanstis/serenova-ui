@@ -1,4 +1,7 @@
-import { withThemeByDataAttribute } from '@storybook/addon-themes'
+import { h } from 'vue'
+import { SThemeProvider } from '../src/components/theme-provider'
+import { lightPreset } from '../src/theme/presets/light'
+import { darkPreset } from '../src/theme/presets/dark'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 
 import './preview.css'
@@ -14,18 +17,43 @@ const withDirection: Decorator = (story, context) => {
 
 const preview: Preview = {
   decorators: [
-    withThemeByDataAttribute({
-      themes: {
-        light: 'light',
-        dark: 'dark',
-      },
-      defaultTheme: 'light',
-      attributeName: 'data-theme',
-      parentSelector: 'html',
-    }),
+    (story, context) => {
+      const preset = context.globals.theme === 'dark' ? darkPreset : lightPreset
+      const t = preset.common
+      return {
+        setup: () => () =>
+          h(
+            'div',
+            {
+              class: 'preview-theme',
+              style: {
+                '--preview-color-text': t.colorText,
+                '--preview-color-text-muted': t.colorTextMuted,
+                '--preview-color-surface': t.colorSurface,
+                '--preview-color-surface-raised': t.colorSurfaceRaised,
+                '--preview-color-border-strong': t.colorBorderStrong,
+                '--preview-radius-medium': t.radiusMedium,
+              },
+            },
+            [h(SThemeProvider, { preset }, { default: () => h(story()) })],
+          ),
+      }
+    },
     withDirection,
   ],
   globalTypes: {
+    theme: {
+      description: '组件主题',
+      toolbar: {
+        title: '主题',
+        icon: 'paintbrush',
+        items: [
+          { value: 'light', title: '浅色' },
+          { value: 'dark', title: '暗色' },
+        ],
+        dynamicTitle: true,
+      },
+    },
     direction: {
       description: '组件预览方向',
       toolbar: {

@@ -10,7 +10,7 @@ import {
   type ButtonSize,
   type ButtonSlots,
   type ButtonVariant,
-} from '@/button/src/public-types'
+} from '@/components/button/src/public-types'
 
 describe('Button 公共类型', () => {
   it('公开与运行时枚举一致的联合类型', () => {

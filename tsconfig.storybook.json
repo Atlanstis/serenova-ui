@@ -8,7 +8,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "serenova-ui": ["./src/index.ts"],
-      "serenova-ui/style.css": ["./src/styles/index.css"]
+      "serenova-ui/button": ["./src/components/button/index.ts"],
+      "serenova-ui/theme-provider": ["./src/components/theme-provider/index.ts"],
+      "serenova-ui/themes/light": ["./src/theme/presets/light.ts"],
+      "serenova-ui/themes/dark": ["./src/theme/presets/dark.ts"]
     }
   }
 }

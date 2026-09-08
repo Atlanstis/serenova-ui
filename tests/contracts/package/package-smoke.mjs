@@ -1,6 +1,18 @@
+import { build } from 'vite'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { copyFile, mkdir, mkdtemp, readFile, realpath, rm, stat, symlink } from 'node:fs/promises'
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  realpath,
+  rm,
+  stat,
+  symlink,
+  writeFile,
+} from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, resolve, sep } from 'node:path'
@@ -49,7 +61,14 @@ assert.equal(resolvedEsmPath, esmPath, '包根 ESM 导出没有解析到约定�
 assert.equal(resolvedCjsPath, cjsPath, '包根 CommonJS 导出没有解析到约定产物。')
 assert.equal(resolvedStylePath, stylePath, '样式子路径没有解析到约定产物。')
 
-const esmSource = await readFile(esmPath, 'utf8')
+const esmFiles = await readdir(resolve(repositoryRoot, 'dist'), { recursive: true })
+const esmSource = (
+  await Promise.all(
+    esmFiles
+      .filter((name) => name.endsWith('.js'))
+      .map((name) => readFile(resolve(repositoryRoot, 'dist', name), 'utf8')),
+  )
+).join('\n')
 assert.match(esmSource, /from\s+["']vue["']/, 'ESM 产物没有外置 Vue。')
 assert(packageJson.peerDependencies?.vue, 'Vue 必须声明为 peerDependency。')
 
@@ -77,9 +96,64 @@ assert(
   'npm 包包含约定范围以外的文件。',
 )
 
+async function readCss(path, visited = new Set()) {
+  if (visited.has(path)) return ''
+  visited.add(path)
+  let css = await readFile(path, 'utf8')
+  for (const match of css.matchAll(/@import\s+["']([^"']+)["'];/g)) {
+    css += await readCss(resolve(dirname(path), match[1]), visited)
+  }
+  return css
+}
+
+const componentCss = await readCss(packageTarget(packageJson.exports['./button/style.css']))
+assert.match(componentCss, /s-button/)
+assert.doesNotMatch(componentCss, /:root|data-theme|button-story/)
+assert.equal(
+  (await readCss(stylePath)).replace(/@import[^;]+;/g, '').trim(),
+  componentCss.replace(/@import[^;]+;/g, '').trim(),
+)
+assert.deepEqual(packageJson.sideEffects, ['**/*.css'])
+
 const temporaryRoot = await mkdtemp(resolve(tmpdir(), 'serenova-ui-package-smoke-'))
 
 try {
+  const splitOutput = resolve(temporaryRoot, 'split')
+  const splitBuild = await build({
+    configFile: resolve(packageTestRoot, 'fixtures/style-splitting/vite.config.ts'),
+    logLevel: 'silent',
+    build: { outDir: splitOutput },
+  })
+  const selectedCss = await readCss(resolve(splitOutput, 'selected/style.css'))
+  assert.match(selectedCss, /s-button/)
+  assert.match(selectedCss, /fixture-shared/)
+  assert.doesNotMatch(selectedCss, /fixture-unrelated/)
+  assert.match(await readCss(resolve(splitOutput, 'serenova-ui.css')), /fixture-unrelated/)
+
+  const splitResults = Array.isArray(splitBuild) ? splitBuild : [splitBuild]
+  const selectedEntry = splitResults
+    .flatMap((result) => result.output)
+    .find((item) => item.type === 'chunk' && item.isEntry && item.name === 'selected')
+  assert.ok(selectedEntry)
+  const consumerEntry = resolve(temporaryRoot, 'consume.js')
+  await writeFile(
+    consumerEntry,
+    `import { SButton } from './split/${selectedEntry.fileName}';\nimport './split/selected/style.css';\nglobalThis.selectedButton = SButton;`,
+  )
+  const consumption = await build({
+    configFile: false,
+    logLevel: 'silent',
+    build: { write: false, rolldownOptions: { input: consumerEntry, external: ['vue'] } },
+  })
+  const consumerCss = (Array.isArray(consumption) ? consumption : [consumption])
+    .flatMap((result) => result.output)
+    .filter((item) => item.type === 'asset' && item.fileName.endsWith('.css'))
+    .map((item) => item.source)
+    .join('\n')
+  assert.match(consumerCss, /s-button/)
+  assert.match(consumerCss, /fixture-shared/)
+  assert.doesNotMatch(consumerCss, /fixture-unrelated/)
+
   const installedPackageRoot = resolve(temporaryRoot, 'node_modules', packageName)
   await mkdir(installedPackageRoot, { recursive: true })
 
@@ -115,6 +189,14 @@ try {
         assert.equal(typeof SerenovaUI.install, 'function')
         assert.equal(typeof SButton.install, 'function')
         assert.equal('components' in library, false)
+        for (const sub of ['button', 'theme-provider', 'themes/light', 'themes/dark']) {
+          const entry = await import(${packageSpecifier} + '/' + sub)
+          assert.ok(Object.keys(entry).length > 0)
+        }
+        const { SThemeProvider } = await import(${packageSpecifier} + '/theme-provider')
+        assert.equal(SThemeProvider, library.SThemeProvider)
+        assert.equal((await import(${packageSpecifier} + '/button')).SButton, SButton)
+        assert.ok(import.meta.resolve(${packageSpecifier} + '/button/style.css'))
         assert.deepEqual(buttonVariants, ['default', 'primary', 'success', 'warning', 'danger'])
         assert.deepEqual(buttonSizes, ['small', 'medium', 'large'])
         assert.deepEqual(buttonNativeTypes, ['button', 'submit', 'reset'])
@@ -123,6 +205,7 @@ try {
         const app = createApp({})
         app.use(SerenovaUI)
         assert.equal(app.component('SButton'), SButton)
+        assert.equal(app.component('SThemeProvider'), library.SThemeProvider)
       `,
     ],
     { cwd: temporaryRoot, stdio: 'inherit' },
@@ -140,10 +223,30 @@ try {
         assert.equal(typeof library.SButton.install, 'function')
         assert.equal('components' in library, false)
         assert.deepEqual(library.buttonSizes, ['small', 'medium', 'large'])
+        for (const sub of ['button', 'theme-provider', 'themes/light', 'themes/dark']) {
+          assert.ok(Object.keys(require(${packageSpecifier} + '/' + sub)).length > 0)
+        }
+        assert.equal(require(${packageSpecifier} + '/theme-provider').SThemeProvider, library.SThemeProvider)
+
       `,
     ],
     { cwd: temporaryRoot, stdio: 'inherit' },
   )
+
+  const presetBuild = await build({
+    configFile: false,
+    logLevel: 'silent',
+    build: {
+      write: false,
+      lib: { entry: resolve(installedPackageRoot, 'dist/themes/dark.js'), formats: ['es'] },
+    },
+  })
+  for (const result of Array.isArray(presetBuild) ? presetBuild : [presetBuild]) {
+    for (const item of result.output) {
+      assert.equal(item.type, 'chunk', '预设不应生成样式资产')
+      assert.doesNotMatch(item.code, /s-button|createElement|defineComponent|from ["']vue["']/)
+    }
+  }
 
   const consumerFixture = resolve(temporaryRoot, 'package-consumer.ts')
   await copyFile(sourceConsumerFixture, consumerFixture)

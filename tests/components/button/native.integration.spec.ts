@@ -1,7 +1,6 @@
 import { expect, test } from 'vitest'
 import { render } from 'vitest-browser-vue'
 
-import '@/styles/index.css'
 import ButtonIntegrationFixture from './fixtures/ButtonIntegration.fixture.vue'
 
 test('禁用和加载状态阻止交互', async () => {

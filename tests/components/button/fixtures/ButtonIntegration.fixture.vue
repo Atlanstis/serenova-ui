@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef } from 'vue'
 
-import Button from '@/button/src/Button.vue'
+import Button from '@/components/button/src/Button.vue'
 
 defineOptions({ name: 'ButtonIntegrationFixture' })
 

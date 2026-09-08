@@ -1,21 +1,25 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { componentStyles } from './build/component-styles.ts'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), componentStyles({ 'button/index': 'button/style.css' })],
   build: {
+    cssCodeSplit: true,
     lib: {
-      entry: 'src/bundle-entry.ts',
-      name: 'SerenovaUI',
+      entry: {
+        'serenova-ui': 'src/index.ts',
+        'button/index': 'src/components/button/index.ts',
+        'theme-provider/index': 'src/components/theme-provider/index.ts',
+        'themes/light': 'src/theme/presets/light.ts',
+        'themes/dark': 'src/theme/presets/dark.ts',
+      },
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'serenova-ui.js' : 'serenova-ui.cjs'),
-      cssFileName: 'serenova-ui',
+      fileName: (format, name) => `${name}.${format === 'es' ? 'js' : 'cjs'}`,
     },
     rolldownOptions: {
       external: ['vue'],
-      output: {
-        exports: 'named',
-      },
+      output: { exports: 'named' },
     },
   },
 })

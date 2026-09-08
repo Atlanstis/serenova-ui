@@ -5,7 +5,9 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [vue()],
+  optimizeDeps: { include: ['vue', 'vue/server-renderer'] },
   resolve: {
+    dedupe: ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/reactivity', '@vue/shared'],
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },

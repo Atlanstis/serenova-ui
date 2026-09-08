@@ -1,15 +1,5 @@
-import type { Plugin } from 'vue'
-
-import { components } from './components'
-
-const SerenovaUI: Plugin = {
-  install(app) {
-    components.forEach((component) => app.use(component))
-  },
-}
-
-export { SButton } from './button'
-export { buttonNativeTypes, buttonSizes, buttonVariants } from './button'
+export { SButton } from './components/button'
+export { buttonNativeTypes, buttonSizes, buttonVariants } from './components/button'
 export type {
   ButtonEmits,
   ButtonNativeType,
@@ -17,6 +7,14 @@ export type {
   ButtonSize,
   ButtonSlots,
   ButtonVariant,
-} from './button'
-export { SerenovaUI }
-export default SerenovaUI
+} from './components/button'
+export { default, SerenovaUI } from './plugin'
+
+export { SThemeProvider } from './components/theme-provider'
+export type {
+  ThemeTokens,
+  ButtonThemeTokens,
+  ThemeOverrides,
+  ThemePreset,
+  ThemeProviderProps,
+} from './components/theme-provider'

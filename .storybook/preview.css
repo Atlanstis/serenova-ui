@@ -17,11 +17,13 @@ body,
 
 body {
   margin: 0;
-  background: var(--s-color-surface);
-  color: var(--s-color-text);
-  transition:
-    background-color var(--s-duration-fast) ease,
-    color var(--s-duration-fast) ease;
+}
+
+.preview-theme {
+  min-height: 100vh;
+  padding: 16px;
+  background: var(--preview-color-surface);
+  color: var(--preview-color-text);
 }
 
 *,

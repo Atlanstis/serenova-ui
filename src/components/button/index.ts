@@ -1,5 +1,5 @@
 import Button from './src/Button.vue'
-import { withInstall } from '../shared/with-install'
+import { withInstall } from '../../shared/with-install'
 
 export const SButton = withInstall(Button, 'SButton')
 

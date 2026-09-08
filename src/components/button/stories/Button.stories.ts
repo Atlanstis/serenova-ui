@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
 import { buttonNativeTypes, buttonSizes, buttonVariants, SButton } from 'serenova-ui'
-import 'serenova-ui/style.css'
 
 import './Button.stories.css'
 

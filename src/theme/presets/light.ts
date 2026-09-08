@@ -1,0 +1,41 @@
+import type { ThemePreset, ThemeTokens } from '../types'
+
+const common: Readonly<ThemeTokens> = Object.freeze({
+  colorPrimary: '#155eef',
+  colorPrimaryHover: '#004eeb',
+  colorOnPrimary: '#ffffff',
+  colorSuccess: '#067647',
+  colorSuccessHover: '#085d3a',
+  colorOnSuccess: '#ffffff',
+  colorWarning: '#b54708',
+  colorWarningHover: '#93370d',
+  colorOnWarning: '#ffffff',
+  colorDanger: '#d92d20',
+  colorDangerHover: '#b42318',
+  colorOnDanger: '#ffffff',
+  colorText: '#182230',
+  colorTextMuted: '#475467',
+  colorSurface: '#ffffff',
+  colorSurfaceRaised: '#ffffff',
+  colorSurfaceHover: '#f2f4f7',
+  colorBorder: '#e4e7ec',
+  colorBorderStrong: '#98a2b3',
+  radiusMedium: '8px',
+  space2: '8px',
+  space3: '12px',
+  space4: '16px',
+  space5: '20px',
+  durationFast: '150ms',
+  heightSmall: '30px',
+  heightMedium: '38px',
+  heightLarge: '46px',
+  fontSizeSmall: '13px',
+  fontSizeMedium: '14px',
+  fontSizeLarge: '16px',
+  fontWeightStrong: '600',
+  opacityDisabled: '0.55',
+  durationSpin: '0.7s',
+})
+
+export const lightPreset: ThemePreset = Object.freeze({ name: 'light', common })
+export type { ThemePreset } from '../types'

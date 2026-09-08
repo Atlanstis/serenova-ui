@@ -3,7 +3,7 @@
   display: grid;
   width: min(860px, 100%);
   gap: 28px;
-  color: var(--s-color-text);
+  color: var(--preview-color-text);
 }
 
 .button-story section {
@@ -13,14 +13,14 @@
 
 .button-story h2 {
   margin: 0;
-  color: var(--s-color-text);
+  color: var(--preview-color-text);
   font-size: 15px;
 }
 
 .button-story p,
 .button-story output {
   margin: 0;
-  color: var(--s-color-text-muted);
+  color: var(--preview-color-text-muted);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -47,18 +47,18 @@
 .button-story__form label {
   display: grid;
   gap: 6px;
-  color: var(--s-color-text);
+  color: var(--preview-color-text);
   font-size: 13px;
   font-weight: 600;
 }
 
 .button-story__form input {
   min-height: 38px;
-  border: 1px solid var(--s-color-border-strong);
-  border-radius: var(--s-radius-medium);
+  border: 1px solid var(--preview-color-border-strong);
+  border-radius: var(--preview-radius-medium);
   padding: 0 12px;
-  background: var(--s-color-surface-raised);
-  color: var(--s-color-text);
+  background: var(--preview-color-surface-raised);
+  color: var(--preview-color-text);
   font: inherit;
 }
 

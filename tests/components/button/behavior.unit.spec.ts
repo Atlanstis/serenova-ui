@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
-import Button from '@/button/src/Button.vue'
+import Button from '@/components/button/src/Button.vue'
 
 describe('SButton', () => {
   it('以默认外观和原生 button 类型渲染', () => {
