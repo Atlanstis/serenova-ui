@@ -25,7 +25,7 @@
       "serenova-ui/button": ["../src/components/button/index.ts"],
       "serenova-ui/theme-provider": ["../src/components/theme-provider/index.ts"],
       "serenova-ui/themes/light": ["../src/theme/presets/light.ts"],
-      "serenova-ui/themes/dark": ["../src/theme/presets/dark.ts"]
+      "serenova-ui/icons": ["../src/components/icon/index.ts"]
     }
   }
 }

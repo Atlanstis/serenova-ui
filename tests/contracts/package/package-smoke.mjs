@@ -189,7 +189,7 @@ try {
         assert.equal(typeof SerenovaUI.install, 'function')
         assert.equal(typeof SButton.install, 'function')
         assert.equal('components' in library, false)
-        for (const sub of ['button', 'theme-provider', 'themes/light', 'themes/dark']) {
+        for (const sub of ['button', 'theme-provider', 'themes/light', 'icons']) {
           const entry = await import(${packageSpecifier} + '/' + sub)
           assert.ok(Object.keys(entry).length > 0)
         }
@@ -197,7 +197,7 @@ try {
         assert.equal(SThemeProvider, library.SThemeProvider)
         assert.equal((await import(${packageSpecifier} + '/button')).SButton, SButton)
         assert.ok(import.meta.resolve(${packageSpecifier} + '/button/style.css'))
-        assert.deepEqual(buttonVariants, ['default', 'primary', 'success', 'warning', 'danger'])
+        assert.deepEqual(buttonVariants, ['primary', 'warning', 'success', 'error', 'text'])
         assert.deepEqual(buttonSizes, ['small', 'medium', 'large'])
         assert.deepEqual(buttonNativeTypes, ['button', 'submit', 'reset'])
         assert.match(import.meta.resolve(${styleSpecifier}), /serenova-ui\\.css$/)
@@ -223,7 +223,7 @@ try {
         assert.equal(typeof library.SButton.install, 'function')
         assert.equal('components' in library, false)
         assert.deepEqual(library.buttonSizes, ['small', 'medium', 'large'])
-        for (const sub of ['button', 'theme-provider', 'themes/light', 'themes/dark']) {
+        for (const sub of ['button', 'theme-provider', 'themes/light', 'icons']) {
           assert.ok(Object.keys(require(${packageSpecifier} + '/' + sub)).length > 0)
         }
         assert.equal(require(${packageSpecifier} + '/theme-provider').SThemeProvider, library.SThemeProvider)
@@ -238,13 +238,63 @@ try {
     logLevel: 'silent',
     build: {
       write: false,
-      lib: { entry: resolve(installedPackageRoot, 'dist/themes/dark.js'), formats: ['es'] },
+      lib: { entry: resolve(installedPackageRoot, 'dist/themes/light.js'), formats: ['es'] },
     },
   })
   for (const result of Array.isArray(presetBuild) ? presetBuild : [presetBuild]) {
     for (const item of result.output) {
       assert.equal(item.type, 'chunk', '预设不应生成样式资产')
       assert.doesNotMatch(item.code, /s-button|createElement|defineComponent|from ["']vue["']/)
+    }
+  }
+
+  const iconNames = [
+    'SIconAdd',
+    'SIconDelete',
+    'SIconEdit',
+    'SIconSearch',
+    'SIconArrowRight',
+    'SIconLoading',
+  ]
+  const installedRequire = createRequire(resolve(temporaryRoot, 'consumer.cjs'))
+  const rootLibrary = installedRequire(packageName)
+  const iconLibrary = installedRequire(`${packageName}/icons`)
+  assert.deepEqual(Object.keys(iconLibrary).sort(), [...iconNames].sort())
+  for (const name of iconNames) {
+    assert.equal(iconLibrary[name], rootLibrary[name])
+    assert.equal(typeof iconLibrary[name].install, 'function')
+  }
+  for (const subpath of ['themes/dark', 'icons/add']) {
+    assert.throws(() => installedRequire.resolve(`${packageName}/${subpath}`), {
+      code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+    })
+  }
+  assert.equal(packageJson.exports['./icons/*'], undefined)
+  for (const [entry, symbol] of [
+    [packageName, 'SIconAdd'],
+    [`${packageName}/icons`, 'SIconAdd'],
+    [`${packageName}/button`, 'SButton'],
+  ]) {
+    const path = resolve(temporaryRoot, 'tree-shake.js')
+    await writeFile(path, `import { ${symbol} } from '${entry}'; globalThis.selected = ${symbol};`)
+    const result = await build({
+      configFile: false,
+      logLevel: 'silent',
+      build: { write: false, minify: false, rolldownOptions: { input: path, external: ['vue'] } },
+    })
+    const output = (Array.isArray(result) ? result : [result]).flatMap((r) => r.output)
+    assert(
+      output.every((item) => item.type === 'chunk'),
+      'JS 图标入口不应引入 CSS',
+    )
+    const code = output.map((item) => item.code).join('\n')
+    assert.doesNotMatch(code, /SIconDelete|SIconEdit|SIconSearch|SIconArrowRight|SThemeProvider/)
+    if (symbol === 'SIconAdd') {
+      assert.match(code, /M12 3V21M3 12H21/)
+      assert.doesNotMatch(code, /SButton|SIconLoading|s-button/)
+    } else {
+      assert.match(code, /SIconLoading/)
+      assert.doesNotMatch(code, /SIconAdd/)
     }
   }
 

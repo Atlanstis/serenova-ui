@@ -14,12 +14,12 @@ import {
 
 describe('Button 公共类型', () => {
   it('公开与运行时枚举一致的联合类型', () => {
-    expect(buttonVariants).toEqual(['default', 'primary', 'success', 'warning', 'danger'])
+    expect(buttonVariants).toEqual(['primary', 'warning', 'success', 'error', 'text'])
     expect(buttonSizes).toEqual(['small', 'medium', 'large'])
     expect(buttonNativeTypes).toEqual(['button', 'submit', 'reset'])
 
     expectTypeOf<ButtonVariant>().toEqualTypeOf<
-      'default' | 'primary' | 'success' | 'warning' | 'danger'
+      'primary' | 'warning' | 'success' | 'error' | 'text'
     >()
     expectTypeOf<ButtonSize>().toEqualTypeOf<'small' | 'medium' | 'large'>()
     expectTypeOf<ButtonNativeType>().toEqualTypeOf<'button' | 'submit' | 'reset'>()

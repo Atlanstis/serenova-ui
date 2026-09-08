@@ -4,27 +4,27 @@ import { render } from 'vitest-browser-vue'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { SButton, SThemeProvider } from '@/index'
-import { darkPreset } from '@/theme/presets/dark'
+import { customPreset } from '../../support/theme-preset'
 import Fixture from './fixtures/Theme.fixture.vue'
 
 test('主题继承、重置、移除覆盖和 Teleport 使用真实样式', async () => {
   const screen = await render(Fixture)
   const style = (id: string) => getComputedStyle(page.getByTestId(id).element())
-  expect(style('plain').backgroundColor).toBe('rgb(21, 94, 239)')
+  expect(style('plain').backgroundColor).toBe('rgb(124, 58, 237)')
   expect(style('parent').backgroundColor).toBe('rgb(18, 52, 86)')
   expect(style('child').backgroundColor).toBe('rgb(101, 67, 33)')
   expect(style('child').borderRadius).toBe('20px')
   for (const id of ['reset', 'preset-reset']) {
-    expect(style(id).backgroundColor).toBe('rgb(21, 94, 239)')
-    expect(style(id).borderRadius).toBe('8px')
+    expect(style(id).backgroundColor).toBe('rgb(124, 58, 237)')
+    expect(style(id).borderRadius).toBe('6px')
   }
   expect(style('teleported').backgroundColor).toBe(style('parent').backgroundColor)
   await screen.getByRole('textbox', { name: '保留输入' }).fill('保持')
   await screen.getByRole('button', { name: '移除覆盖', exact: true }).click()
   await expect.poll(() => style('parent').backgroundColor).toBe('rgb(132, 173, 255)')
-  expect(style('parent').borderRadius).toBe('8px')
+  expect(style('parent').borderRadius).toBe('6px')
   await screen.getByRole('button', { name: '切换主题' }).click()
-  await expect.poll(() => style('parent').backgroundColor).toBe('rgb(21, 94, 239)')
+  await expect.poll(() => style('parent').backgroundColor).toBe('rgb(124, 58, 237)')
   expect(style('teleported').backgroundColor).toBe(style('parent').backgroundColor)
   expect(style('sibling').backgroundColor).toBe('rgb(132, 173, 255)')
   await expect.element(screen.getByRole('textbox')).toHaveValue('保持')
@@ -47,7 +47,7 @@ test('相同主题的 SSR 输出可无差异 hydration', async () => {
     render: () =>
       h(
         SThemeProvider,
-        { preset: darkPreset },
+        { preset: customPreset },
         { default: () => h(SButton, { variant: 'primary' }, () => '服务端按钮') },
       ),
   }

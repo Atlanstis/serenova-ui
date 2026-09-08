@@ -16,12 +16,12 @@ test('禁用和加载状态阻止交互', async () => {
 
   const disabledStyle = getComputedStyle(disabled.element())
   expect(disabledStyle.cursor).toBe('not-allowed')
-  expect(disabledStyle.opacity).toBe('0.55')
+  expect(disabledStyle.opacity).toBe('1')
 
   const spinnerStyle = getComputedStyle(spinner as HTMLElement)
-  expect(spinnerStyle.width).toBe('14px')
-  expect(spinnerStyle.height).toBe('14px')
-  expect(spinnerStyle.borderTopWidth).toBe('2px')
+  expect(spinnerStyle.width).toBe('16px')
+  expect(spinnerStyle.height).toBe('16px')
+  expect(spinnerStyle.animationDuration).toBe('0.8s')
 })
 
 test('保留 submit 和 reset 的原生表单行为', async () => {
@@ -47,14 +47,14 @@ test('解析公共变体与尺寸的计算样式', async () => {
   const screen = await render(ButtonIntegrationFixture)
   const primaryStyle = getComputedStyle(screen.getByTestId('primary-target').element())
 
-  expect(primaryStyle.backgroundColor).toBe('rgb(21, 94, 239)')
-  expect(primaryStyle.borderColor).toBe('rgb(21, 94, 239)')
+  expect(primaryStyle.backgroundColor).toBe('rgb(124, 58, 237)')
+  expect(primaryStyle.borderColor).toBe('rgb(124, 58, 237)')
   expect(primaryStyle.color).toBe('rgb(255, 255, 255)')
 
   const sizeContracts = [
-    ['small-target', 30, '13px'],
-    ['medium-target', 38, '14px'],
-    ['large-target', 46, '16px'],
+    ['small-target', 28, '14px'],
+    ['medium-target', 34, '14px'],
+    ['large-target', 40, '14px'],
   ] as const
 
   for (const [testId, height, fontSize] of sizeContracts) {

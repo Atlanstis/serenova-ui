@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { SButton, SThemeProvider } from 'serenova-ui'
-import { darkPreset } from 'serenova-ui/themes/dark'
 
 const meta = {
   title: '组件/ThemeProvider',
@@ -22,14 +21,14 @@ const meta = {
   args: { inherit: true },
   render: (args) => ({
     components: { SThemeProvider, SButton },
-    setup: () => ({ args, darkPreset }),
-    template: `<SThemeProvider :preset="darkPreset"><SThemeProvider v-bind="args"><SButton variant="primary">主题按钮</SButton></SThemeProvider></SThemeProvider>`,
+    setup: () => ({ args }),
+    template: `<SThemeProvider :tokens="{ common: { colorPrimary: '#21885c' } }"><SThemeProvider v-bind="args"><SButton variant="primary">主题按钮</SButton></SThemeProvider></SThemeProvider>`,
   }),
 } satisfies Meta<typeof SThemeProvider>
 
 export default meta
 type Story = StoryObj<typeof meta>
-export const Inherit: Story = { name: '继承暗色主题' }
+export const Inherit: Story = { name: '继承局部浅色覆盖' }
 export const Reset: Story = { name: '重置为默认主题', args: { inherit: false } }
 export const Override: Story = {
   name: '局部共享与组件覆盖',

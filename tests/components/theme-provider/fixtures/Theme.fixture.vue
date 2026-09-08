@@ -2,12 +2,12 @@
 import { ref, shallowRef } from 'vue'
 import { SButton, SThemeProvider } from '@/index'
 import type { ThemeOverrides } from '@/components/theme-provider'
-import { darkPreset } from '@/theme/presets/dark'
+import { customPreset } from '../../../support/theme-preset'
 import { lightPreset } from '@/theme/presets/light'
 
 defineOptions({ name: 'ThemeIntegrationFixture' })
 
-const dark = shallowRef(true)
+const custom = shallowRef(true)
 const overrides = ref<ThemeOverrides>({
   common: { colorPrimary: '#123456' },
   components: { Button: { borderRadius: '20px' } },
@@ -16,10 +16,10 @@ const count = shallowRef(0)
 </script>
 
 <template>
-  <button @click="dark = !dark">切换主题</button>
+  <button @click="custom = !custom">切换主题</button>
   <button @click="overrides = {}">移除覆盖</button>
   <SButton data-testid="plain" variant="primary">默认</SButton>
-  <SThemeProvider :preset="dark ? darkPreset : lightPreset" :tokens="overrides">
+  <SThemeProvider :preset="custom ? customPreset : lightPreset" :tokens="overrides">
     <SButton data-testid="parent" variant="primary" @click="count++">操作</SButton>
     <SThemeProvider :tokens="{ common: { colorPrimary: '#654321' } }">
       <SButton data-testid="child" variant="primary">局部</SButton>
@@ -35,7 +35,7 @@ const count = shallowRef(0)
     </Teleport>
     <input aria-label="保留输入" />
   </SThemeProvider>
-  <SThemeProvider :preset="darkPreset">
+  <SThemeProvider :preset="customPreset">
     <SButton data-testid="sibling" variant="primary">兄弟</SButton>
   </SThemeProvider>
   <output data-testid="count">{{ count }}</output>

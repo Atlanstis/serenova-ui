@@ -45,12 +45,12 @@ import 'serenova-ui/button/style.css'
 <script setup lang="ts">
 import { SButton } from 'serenova-ui/button'
 import { SThemeProvider } from 'serenova-ui/theme-provider'
-import { darkPreset } from 'serenova-ui/themes/dark'
+import { lightPreset } from 'serenova-ui/themes/light'
 import 'serenova-ui/button/style.css'
 </script>
 
 <template>
-  <SThemeProvider :preset="darkPreset">
+  <SThemeProvider :preset="lightPreset">
     <SButton variant="primary">保存</SButton>
   </SThemeProvider>
 </template>
@@ -58,7 +58,30 @@ import 'serenova-ui/button/style.css'
 
 Provider 不增加 DOM；无 Provider 时使用默认浅色主题。预设可响应式切换，内层 `inherit=false` 恢复默认主题，`tokens` 支持共享与组件覆盖。公共 API 详见 Storybook Docs，完整实现规则见 [样式与主题规范](./docs/styling-and-theming.md)。
 
-**主题迁移：** 全量 CSS 不再写入全局 token 或处理 `[data-theme='dark']`。原暗色属性切换改为 Provider 的 `preset`，祖先 CSS 变量覆盖改为 `tokens`；普通业务页面的背景、文字和表单样式由应用管理。默认组件外观及全量样式路径保持可用。
+**迁移：** Button 默认改为 primary，移除 default；danger 改为 error，主题字段中的 Danger 同步改为 Error。原 default 请按意图选择 primary、primary+ghost 或 text。内置暗色预设及其子路径已移除，使用浅色预设或 Provider 自定义覆盖。全量 CSS 保留原入口，不向全局注入主题。
+
+### SVG 图标
+
+六个具名内联 SVG 组件支持外部独立使用，无需 CSS 或 SVG loader：
+
+```vue
+<script setup lang="ts">
+import { SButton, SIconAdd } from 'serenova-ui'
+import { SIconArrowRight } from 'serenova-ui/icons'
+import 'serenova-ui/style.css'
+</script>
+
+<template>
+  <SIconAdd :size="24" color="#7c3aed" />
+  <SButton variant="error" ghost>
+    <template #icon><SIconAdd /></template>
+    操作
+    <template #suffixIcon><SIconArrowRight /></template>
+  </SButton>
+</template>
+```
+
+图标包括 Add、Delete、Edit、Search、ArrowRight、Loading，均使用 SIcon 前缀。size 默认 24，color 缺省继承文字色；Button 内默认 16 px。图标仅提供包根和 icons 集合入口。通过 `pnpm icons:generate` 更新生成文件，`pnpm icons:check` 验证同步；来源见 [图标资产](./assets/icons/README.md)。
 
 ## 本地开发
 
@@ -73,7 +96,7 @@ pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Storybook 默认运行在 [http://localhost:6006](http://localhost:6006)，提供 Docs、Controls、Actions、Interactions、主题、RTL 和常见视口工具。
+Storybook 默认运行在 [http://localhost:6006](http://localhost:6006)，提供 Docs、Controls、Actions、Interactions、浅色局部覆盖、RTL 和常见视口工具。
 
 Storybook 仅用于开发过程的源码预览，通过组件公共名称映射加载源码，SFC 自身提供样式并支持 Vite HMR。发布产物由构建和包级冒烟测试独立验证。
 
@@ -85,6 +108,7 @@ Storybook 仅用于开发过程的源码预览，通过组件公共名称映射�
 src/
 ├── components/         # 公共组件
 │   ├── button/         # src、theme、stories 与公共入口
+│   ├── icon/           # 生成 SVG 组件、公共类型与图标集合入口
 │   └── theme-provider/ # 无 DOM 主题组件、Story 与公共入口
 ├── theme/              # 共享主题类型、上下文、合并与 presets
 ├── shared/             # 跨领域内部辅助
@@ -172,7 +196,8 @@ dist/
 ├── index.d.ts
 ├── button/             # JS、CommonJS、声明与 style.css
 ├── theme-provider/     # JS、CommonJS 与声明
-├── themes/             # 明暗预设与声明
+├── icons/              # 图标集合 ESM/CommonJS
+├── themes/             # 浅色预设与声明
 └── ...共享模块与内部 CSS 资产
 ```
 

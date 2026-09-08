@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { shallowRef } from 'vue'
-import { darkPreset } from 'serenova-ui/themes/dark'
 import { lightPreset } from 'serenova-ui/themes/light'
-const dark = shallowRef(false)
+const custom = shallowRef(false)
 
 defineOptions({ name: 'ConsumerApp' })
 
 const name = shallowRef('')
 const confirmation = shallowRef('')
+const loading = shallowRef(false)
+const pendingName = shallowRef('')
 
 function handleSubmit() {
-  confirmation.value = `已提交：${name.value}`
+  if (loading.value) return
+  loading.value = true
+  pendingName.value = name.value
+}
+
+function completeSubmit() {
+  confirmation.value = `已提交：${pendingName.value}`
+  loading.value = false
 }
 </script>
 
@@ -18,15 +26,21 @@ function handleSubmit() {
   <main>
     <h1>Serenova UI 消费应用</h1>
 
-    <button @click="dark = !dark">切换主题</button>
-    <SThemeProvider :preset="dark ? darkPreset : lightPreset">
+    <button @click="custom = !custom">切换主题</button>
+    <SThemeProvider
+      :preset="lightPreset"
+      :tokens="custom ? { common: { colorPrimary: '#84adff' } } : {}"
+    >
       <form @submit.prevent="handleSubmit">
         <label for="name">名称</label>
         <input id="name" v-model="name" name="name" required />
-        <SButton native-type="submit" variant="primary">提交</SButton>
+        <SButton native-type="submit" variant="primary" :loading="loading"
+          ><template #icon><SIconAdd /></template>提交</SButton
+        >
       </form>
     </SThemeProvider>
 
+    <button v-if="loading" @click="completeSubmit">完成请求</button>
     <output v-if="confirmation" data-testid="confirmation">{{ confirmation }}</output>
   </main>
 </template>

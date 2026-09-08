@@ -2,7 +2,25 @@ import type { Plugin } from 'vue'
 import { SButton } from './components/button'
 import { SThemeProvider } from './components/theme-provider'
 
-const components = [SButton, SThemeProvider] as const
+import {
+  SIconAdd,
+  SIconDelete,
+  SIconEdit,
+  SIconSearch,
+  SIconArrowRight,
+  SIconLoading,
+} from './components/icon'
+
+const components = [
+  SButton,
+  SThemeProvider,
+  SIconAdd,
+  SIconDelete,
+  SIconEdit,
+  SIconSearch,
+  SIconArrowRight,
+  SIconLoading,
+] as const
 
 export const SerenovaUI: Plugin = {
   install(app) {

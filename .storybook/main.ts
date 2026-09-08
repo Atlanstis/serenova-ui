@@ -47,8 +47,8 @@ const config: StorybookConfig = {
           replacement: resolve(projectRoot, 'src/theme/presets/light.ts'),
         },
         {
-          find: /^serenova-ui\/themes\/dark$/,
-          replacement: resolve(projectRoot, 'src/theme/presets/dark.ts'),
+          find: /^serenova-ui\/icons$/,
+          replacement: resolve(projectRoot, 'src/components/icon/index.ts'),
         },
         ...normalizeAliases(viteConfig.resolve?.alias),
       ],

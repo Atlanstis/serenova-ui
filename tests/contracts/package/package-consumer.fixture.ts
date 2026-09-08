@@ -42,10 +42,9 @@ import {
   type ThemeProviderProps,
 } from 'serenova-ui/theme-provider'
 import { lightPreset } from 'serenova-ui/themes/light'
-import { darkPreset } from 'serenova-ui/themes/dark'
 import type { ThemeProviderProps as RootThemeProviderProps } from 'serenova-ui'
 
-const theme: ThemePreset = darkPreset
+const theme: ThemePreset = lightPreset
 const common: ThemeTokens = lightPreset.common
 const buttonTokens: Partial<ButtonThemeTokens> = { borderRadius: '12px' }
 const tokens: ThemeOverrides = { components: { Button: buttonTokens } }
@@ -56,3 +55,29 @@ const providerProps: RootThemeProviderProps & ThemeProviderProps = {
 }
 const providerPlugin: Plugin = SThemeProvider
 void [IndividualButton, providerProps, providerPlugin, common]
+
+import {
+  SIconAdd,
+  SIconDelete,
+  SIconEdit,
+  SIconSearch,
+  SIconArrowRight,
+  SIconLoading,
+  type IconProps,
+} from 'serenova-ui/icons'
+import { SIconAdd as RootAdd, type IconProps as RootIconProps } from 'serenova-ui'
+const iconProps: IconProps & RootIconProps = { size: '2em', color: '#123456' }
+const iconPlugins: Plugin[] = [
+  SIconAdd,
+  SIconDelete,
+  SIconEdit,
+  SIconSearch,
+  SIconArrowRight,
+  SIconLoading,
+  RootAdd,
+]
+// @ts-expect-error default 变体已移除。
+const oldDefault: ButtonVariant = 'default'
+// @ts-expect-error danger 改为 error。
+const oldDanger: ButtonVariant = 'danger'
+void [iconProps, iconPlugins, oldDefault, oldDanger]

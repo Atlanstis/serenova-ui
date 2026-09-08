@@ -44,6 +44,9 @@ importers:
       '@vue/tsconfig':
         specifier: ^0.9.1
         version: 0.9.1(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3))
+      '@xmldom/xmldom':
+        specifier: 0.9.12
+        version: 0.9.12
       eslint:
         specifier: ^10.9.1
         version: 10.9.1(jiti@2.6.1)
@@ -1143,6 +1146,10 @@ packages:
 
   '@webcontainer/env@1.1.1':
     resolution: {integrity: sha512-6aN99yL695Hi9SuIk1oC88l9o0gmxL1nGWWQ/kNy81HigJ0FoaoTXpytCj6ItzgyCEwA9kF1wixsTuv5cjsgng==}
+
+  '@xmldom/xmldom@0.9.12':
+    resolution: {integrity: sha512-5AXjrcMClTryPe9LgZrygpB1lj7s0S9E0+W+AHaVKAVyHanafK86iPSvG5xHVSp/jC+VH1UXu0TAEmY279xH7A==}
+    engines: {node: '>=14.6'}
 
   abbrev@5.0.0:
     resolution: {integrity: sha512-/XrFJgzQQQHpti1raDJC6m4ws6aNktmjBlhk8Fdlk7LwCEuDoieEJJY9OFHjfiFJFFRM2tK+Ky/IsfbbmlMu1w==}
@@ -3432,6 +3439,8 @@ snapshots:
       vue: 3.5.42(typescript@6.0.3)
 
   '@webcontainer/env@1.1.1': {}
+
+  '@xmldom/xmldom@0.9.12': {}
 
   abbrev@5.0.0: {}
 

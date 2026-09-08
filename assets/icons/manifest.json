@@ -1,0 +1,43 @@
+{
+  "fileKey": "RXjt6R6Hhaz4NJP8fYw533",
+  "retrievedAt": "2026-09-08",
+  "note": "来源节点均无背景填充；仓库 SVG 已去除 MCP 画布背景和导出元数据，颜色统一为 currentColor，路径几何保持不变。sha256 校验仓库资源，figmaExportSha256 记录清理前导出内容",
+  "icons": [
+    {
+      "name": "Add",
+      "nodeId": "72:10",
+      "sha256": "bd0f8ea0e906f05b9b09e091f8e191d55af2d17078fbf7a076368368e9cfc16d",
+      "figmaExportSha256": "917693f0ebc506f0daed3685f02fbf85972141dedf849ce0c5cb909c9ce7a502"
+    },
+    {
+      "name": "Delete",
+      "nodeId": "72:12",
+      "sha256": "283e104dbce889daa50cdcf3c826f3ec53b4da51a0eb78d8d6a7397c6fe13234",
+      "figmaExportSha256": "4cf1d341635483c0f254fbd6e8805432bad8fbd2cff7af3b43b81f15a374c935"
+    },
+    {
+      "name": "Edit",
+      "nodeId": "72:14",
+      "sha256": "f3c68310409f8506c3cf8a7b1e9a4cc532c73dfdcec6a474ac15dfc65b15f54b",
+      "figmaExportSha256": "6e33804e75f2f273a56184cad0121eacd4c768c65e37f60d10c68f64fb476825"
+    },
+    {
+      "name": "Search",
+      "nodeId": "72:16",
+      "sha256": "39c93f6c0114ff340f3bfa75e27201a7a68bbd766cdbe7edddd2feb767b2cf7a",
+      "figmaExportSha256": "960ce84f464f88e64290f9a78c85502e790c772c686da37b03cef1f5df4b3972"
+    },
+    {
+      "name": "ArrowRight",
+      "nodeId": "20:4",
+      "sha256": "937b0d969a2740b85898fd085a22cd54a59773c4eefea3a8df9e304bbd8606ec",
+      "figmaExportSha256": "bf4ebf7ffdf66a0fabf0ccaaa241d45ca6382c25603c588d4fb4500f70241257"
+    },
+    {
+      "name": "Loading",
+      "nodeId": "20:2",
+      "sha256": "ec43dfb38a8ca697ea6392b1121771e1598706406541bf98579144bac1c5af58",
+      "figmaExportSha256": "0158df9fe296188deab639e94c85c143d25a2178bf63981352b861fecaee835a"
+    }
+  ]
+}

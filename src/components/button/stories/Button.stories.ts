@@ -2,7 +2,14 @@ import { ref } from 'vue'
 import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import { expect, fn, userEvent, within } from 'storybook/test'
 
-import { buttonNativeTypes, buttonSizes, buttonVariants, SButton } from 'serenova-ui'
+import {
+  buttonNativeTypes,
+  buttonSizes,
+  buttonVariants,
+  SButton,
+  SIconAdd,
+  SIconArrowRight,
+} from 'serenova-ui'
 
 import './Button.stories.css'
 
@@ -20,6 +27,8 @@ const meta = {
     },
   },
   argTypes: {
+    ghost: { control: 'boolean', description: '语义描边按钮；text 下不生效。' },
+    iconOnly: { control: 'boolean', description: '正方形纯图标；优先于 block。' },
     variant: {
       control: 'select',
       options: buttonVariants,
@@ -52,7 +61,7 @@ const meta = {
     },
   },
   args: {
-    variant: 'default',
+    variant: 'primary',
     size: 'medium',
     nativeType: 'button',
     block: false,
@@ -61,7 +70,7 @@ const meta = {
     onClick: fn(),
   },
   render: (args) => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       return { args }
     },
@@ -79,7 +88,7 @@ export const Variants: Story = {
     onClick: fn(),
   },
   render: (args) => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       return { args, buttonVariants }
     },
@@ -109,7 +118,7 @@ export const SizesAndStates: Story = {
     onClick: fn(),
   },
   render: (args) => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       return { args, buttonSizes }
     },
@@ -155,7 +164,7 @@ export const Slots: Story = {
     onClick: fn(),
   },
   render: (args) => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       return { args }
     },
@@ -166,10 +175,7 @@ export const Slots: Story = {
           <div class="button-story__row">
             <SButton variant="primary" @click="args.onClick">
               <template #icon>
-                <svg class="button-story__icon" viewBox="0 0 24 24">
-                  <path d="M11 5h2v14h-2z" />
-                  <path d="M5 11h14v2H5z" />
-                </svg>
+                <SIconAdd />
               </template>
               新建项目
             </SButton>
@@ -182,11 +188,11 @@ export const Slots: Story = {
 
 export const Form: Story = {
   args: {
-    variant: 'default',
+    variant: 'primary',
   },
 
   render: () => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       const projectName = ref('Serenova')
       const status = ref('尚未提交')
@@ -228,7 +234,7 @@ export const Interaction: Story = {
     onClick: fn(),
   },
   render: (args) => ({
-    components: { SButton },
+    components: { SButton, SIconAdd, SIconArrowRight },
     setup() {
       const clickCount = ref(0)
 
@@ -263,4 +269,18 @@ export const Interaction: Story = {
     await expect(args.onClick).toHaveBeenCalledOnce()
     await expect(canvas.getByText('点击次数：1')).toBeVisible()
   },
+}
+
+export const GhostAndIcons: Story = {
+  render: () => ({
+    components: { SButton, SIconAdd, SIconArrowRight },
+    setup: () => ({ buttonVariants }),
+    template: `<div class="button-story__stack"><div v-for="variant in buttonVariants" :key="variant" class="button-story__row">
+      <SButton :variant="variant" ghost>Ghost</SButton>
+      <SButton :variant="variant"><template #icon><SIconAdd /></template>新增<template #suffixIcon><SIconArrowRight /></template></SButton>
+      <SButton :variant="variant" icon-only><template #icon><SIconAdd /></template></SButton>
+      <SButton :variant="variant" ghost icon-only loading />
+      <SButton :variant="variant" disabled>禁用</SButton>
+    </div><p>使用 Tab 查看焦点；点击或 Enter、Space 触发语义外环。</p></div>`,
+  }),
 }

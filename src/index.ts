@@ -18,3 +18,13 @@ export type {
   ThemePreset,
   ThemeProviderProps,
 } from './components/theme-provider'
+
+export {
+  SIconAdd,
+  SIconDelete,
+  SIconEdit,
+  SIconSearch,
+  SIconArrowRight,
+  SIconLoading,
+} from './components/icon'
+export type { IconProps } from './components/icon'

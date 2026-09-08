@@ -10,63 +10,159 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
   return computed(() => {
     const theme = context?.value ?? lightPreset
     const t = theme.common
-    const defaults: ButtonThemeTokens = {
-      background: t.colorSurfaceRaised,
-      backgroundHover: t.colorSurfaceHover,
-      borderColor: t.colorBorderStrong,
-      textColor: t.colorText,
+    const primary = {
+      background: t.colorPrimary,
+      backgroundHover: t.colorPrimaryHover,
+      backgroundPressed: t.colorPrimaryPressed,
+      backgroundDisabled: t.colorPrimaryDisabled,
+      borderColor: t.colorPrimary,
+      textColor: t.colorOnPrimary,
+      focusColor: t.colorPrimaryFocus,
+      ghostColor: t.colorAccent,
+    }
+    const semantic = (
+      color: string,
+      hover: string,
+      pressed: string,
+      disabled: string,
+      text: string,
+    ) => ({
+      background: color,
+      backgroundHover: hover,
+      backgroundPressed: pressed,
+      backgroundDisabled: disabled,
+      borderColor: color,
+      textColor: text,
+      focusColor: color,
+      ghostColor: color,
+    })
+    const variants = {
+      Primary: primary,
+      Warning: semantic(
+        t.colorWarning,
+        t.colorWarningHover,
+        t.colorWarningPressed,
+        t.colorWarningDisabled,
+        t.colorOnWarning,
+      ),
+      Success: semantic(
+        t.colorSuccess,
+        t.colorSuccessHover,
+        t.colorSuccessPressed,
+        t.colorSuccessDisabled,
+        t.colorOnSuccess,
+      ),
+      Error: semantic(
+        t.colorError,
+        t.colorErrorHover,
+        t.colorErrorPressed,
+        t.colorErrorDisabled,
+        t.colorOnError,
+      ),
+      Text: {
+        ...primary,
+        background: 'transparent',
+        backgroundHover: 'transparent',
+        backgroundPressed: 'transparent',
+        backgroundDisabled: 'transparent',
+        borderColor: 'transparent',
+        textColor: t.colorAccent,
+      },
+    }
+    const defaults = {
+      ...primary,
       borderRadius: t.radiusMedium,
       gap: t.space2,
       duration: t.durationFast,
       spinDuration: t.durationSpin,
       disabledOpacity: t.opacityDisabled,
       fontWeight: t.fontWeightStrong,
+      fontFamily: "'Noto Sans SC', sans-serif",
+      lineHeight: '20px',
+      iconSize: '16px',
+      focusWidth: '2px',
+      focusOffset: '2px',
+      waveDuration: '600ms',
+      waveSpread: '5px',
+      shadow: '0 2px 3px rgba(64, 38, 102, 0.08)',
+      textColorDisabled: t.colorTextDisabled,
       heightSmall: t.heightSmall,
       paddingSmall: t.space3,
       fontSizeSmall: t.fontSizeSmall,
+      minWidthSmall: '64px',
       heightMedium: t.heightMedium,
       paddingMedium: t.space4,
       fontSizeMedium: t.fontSizeMedium,
+      minWidthMedium: '80px',
       heightLarge: t.heightLarge,
       paddingLarge: t.space5,
       fontSizeLarge: t.fontSizeLarge,
-      backgroundPrimary: t.colorPrimary,
-      backgroundHoverPrimary: t.colorPrimaryHover,
-      borderColorPrimary: t.colorPrimary,
-      textColorPrimary: t.colorOnPrimary,
-      backgroundSuccess: t.colorSuccess,
-      backgroundHoverSuccess: t.colorSuccessHover,
-      borderColorSuccess: t.colorSuccess,
-      textColorSuccess: t.colorOnSuccess,
-      backgroundWarning: t.colorWarning,
-      backgroundHoverWarning: t.colorWarningHover,
-      borderColorWarning: t.colorWarning,
-      textColorWarning: t.colorOnWarning,
-      backgroundDanger: t.colorDanger,
-      backgroundHoverDanger: t.colorDangerHover,
-      borderColorDanger: t.colorDanger,
-      textColorDanger: t.colorOnDanger,
+      minWidthLarge: '96px',
+    } as ButtonThemeTokens
+    for (const [variant, values] of Object.entries(variants)) {
+      for (const [key, value] of Object.entries(values))
+        defaults[`${key}${variant}` as keyof ButtonThemeTokens] = value
     }
-    const tokens = mergeKnown(defaults, theme.components?.Button)
-    const variant = props.variant ?? 'default'
-    const suffix = variant === 'default' ? '' : variant[0]!.toUpperCase() + variant.slice(1)
+    // 无后缀字段代表 primary 基础覆盖；显式 Primary 字段优先。
+    const overrides = theme.components?.Button
+    const tokens = mergeKnown(defaults, overrides)
+    const variant = props.variant ?? 'primary'
+    const suffix = variant[0]!.toUpperCase() + variant.slice(1)
+    const get = (key: keyof typeof primary) => {
+      const variantKey = `${key}${suffix}` as keyof ButtonThemeTokens
+      return variant === 'primary'
+        ? (overrides?.[variantKey] ?? overrides?.[key] ?? tokens[variantKey])
+        : tokens[variantKey]
+    }
+    const text = variant === 'text'
+    const ghost = !!props.ghost && !text
+    const disabled = props.disabled || props.loading
+    const foreground = disabled
+      ? ghost
+        ? get('backgroundDisabled')
+        : text
+          ? tokens.textColorDisabled
+          : get('textColor')
+      : ghost
+        ? get('ghostColor')
+        : get('textColor')
     const size = props.size ?? 'medium'
     const sizeSuffix = size[0]!.toUpperCase() + size.slice(1)
-    const value = (key: string) => tokens[key as keyof ButtonThemeTokens]
+    const sized = (key: string) => tokens[`${key}${sizeSuffix}` as keyof ButtonThemeTokens]
     return {
-      '--s-button-background': value(`background${suffix}`),
-      '--s-button-background-hover': value(`backgroundHover${suffix}`),
-      '--s-button-border-color': value(`borderColor${suffix}`),
-      '--s-button-text-color': value(`textColor${suffix}`),
+      '--s-button-background': ghost
+        ? 'transparent'
+        : disabled
+          ? get('backgroundDisabled')
+          : get('background'),
+      '--s-button-background-hover': ghost ? 'transparent' : get('backgroundHover'),
+      '--s-button-background-pressed': ghost ? 'transparent' : get('backgroundPressed'),
+      '--s-button-border-color': ghost
+        ? foreground
+        : disabled
+          ? get('backgroundDisabled')
+          : get('borderColor'),
+      '--s-button-text-color': foreground,
+      '--s-button-focus-color': get('focusColor'),
+      '--s-button-wave-color': ghost ? get('ghostColor') : get('background'),
       '--s-button-border-radius': tokens.borderRadius,
       '--s-button-gap': tokens.gap,
       '--s-button-duration': tokens.duration,
       '--s-button-spin-duration': tokens.spinDuration,
       '--s-button-disabled-opacity': tokens.disabledOpacity,
       '--s-button-font-weight': tokens.fontWeight,
-      '--s-button-height': value(`height${sizeSuffix}`),
-      '--s-button-padding': value(`padding${sizeSuffix}`),
-      '--s-button-font-size': value(`fontSize${sizeSuffix}`),
+      '--s-button-font-family': tokens.fontFamily,
+      '--s-button-line-height': tokens.lineHeight,
+      '--s-button-icon-size': tokens.iconSize,
+      '--s-button-focus-width': tokens.focusWidth,
+      '--s-button-focus-offset': tokens.focusOffset,
+      '--s-button-wave-duration': tokens.waveDuration,
+      '--s-button-wave-spread': tokens.waveSpread,
+      '--s-button-shadow': variant === 'primary' && !ghost && !disabled ? tokens.shadow : 'none',
+      '--s-button-height': sized('height'),
+      '--s-button-padding': props.iconOnly ? '0px' : sized('padding'),
+      '--s-button-font-size': sized('fontSize'),
+      '--s-button-min-width': props.iconOnly ? sized('height') : text ? '0px' : sized('minWidth'),
     }
   })
 }

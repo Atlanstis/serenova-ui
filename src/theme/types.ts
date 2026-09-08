@@ -2,6 +2,17 @@ import type { ButtonThemeTokens } from '../components/button/theme/types'
 export type { ButtonThemeTokens } from '../components/button/theme/types'
 
 export interface ThemeTokens {
+  colorPrimaryPressed: string
+  colorPrimaryDisabled: string
+  colorPrimaryFocus: string
+  colorAccent: string
+  colorTextDisabled: string
+  colorWarningPressed: string
+  colorWarningDisabled: string
+  colorSuccessPressed: string
+  colorSuccessDisabled: string
+  colorErrorPressed: string
+  colorErrorDisabled: string
   colorPrimary: string
   colorPrimaryHover: string
   colorOnPrimary: string
@@ -11,9 +22,9 @@ export interface ThemeTokens {
   colorWarning: string
   colorWarningHover: string
   colorOnWarning: string
-  colorDanger: string
-  colorDangerHover: string
-  colorOnDanger: string
+  colorError: string
+  colorErrorHover: string
+  colorOnError: string
   colorText: string
   colorTextMuted: string
   colorSurface: string

@@ -1,7 +1,6 @@
 import { h } from 'vue'
 import { SThemeProvider } from '../src/components/theme-provider'
 import { lightPreset } from '../src/theme/presets/light'
-import { darkPreset } from '../src/theme/presets/dark'
 import type { Decorator, Preview } from '@storybook/vue3-vite'
 
 import './preview.css'
@@ -17,8 +16,8 @@ const withDirection: Decorator = (story, context) => {
 
 const preview: Preview = {
   decorators: [
-    (story, context) => {
-      const preset = context.globals.theme === 'dark' ? darkPreset : lightPreset
+    (story) => {
+      const preset = lightPreset
       const t = preset.common
       return {
         setup: () => () =>
@@ -42,18 +41,6 @@ const preview: Preview = {
     withDirection,
   ],
   globalTypes: {
-    theme: {
-      description: '组件主题',
-      toolbar: {
-        title: '主题',
-        icon: 'paintbrush',
-        items: [
-          { value: 'light', title: '浅色' },
-          { value: 'dark', title: '暗色' },
-        ],
-        dynamicTitle: true,
-      },
-    },
     direction: {
       description: '组件预览方向',
       toolbar: {
@@ -69,7 +56,6 @@ const preview: Preview = {
   },
   initialGlobals: {
     direction: 'ltr',
-    theme: 'light',
   },
   parameters: {
     controls: {

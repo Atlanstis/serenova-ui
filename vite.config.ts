@@ -12,7 +12,7 @@ export default defineConfig({
         'button/index': 'src/components/button/index.ts',
         'theme-provider/index': 'src/components/theme-provider/index.ts',
         'themes/light': 'src/theme/presets/light.ts',
-        'themes/dark': 'src/theme/presets/dark.ts',
+        'icons/index': 'src/components/icon/index.ts',
       },
       formats: ['es', 'cjs'],
       fileName: (format, name) => `${name}.${format === 'es' ? 'js' : 'cjs'}`,

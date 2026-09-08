@@ -13,7 +13,7 @@ describe('SButton', () => {
 
     expect(wrapper.element.tagName).toBe('BUTTON')
     expect(wrapper.attributes('type')).toBe('button')
-    expect(wrapper.classes()).toContain('s-button--default')
+    expect(wrapper.classes()).toContain('s-button--primary')
     expect(wrapper.classes()).toContain('s-button--medium')
     expect(wrapper.get('.s-button__content').text()).toBe('保存')
   })
@@ -116,4 +116,40 @@ describe('SButton', () => {
 
     expect(wrapper.attributes('type')).toBe(nativeType)
   })
+})
+
+it('前后图标、加载替换和纯图标组合保持内容契约', async () => {
+  const wrapper = mount(Button, {
+    slots: {
+      icon: '<svg data-testid="prefix" />',
+      default: '保存',
+      suffixIcon: '<svg data-testid="suffix" />',
+    },
+  })
+  expect(wrapper.findAll('svg').map((n) => n.attributes('data-testid'))).toEqual([
+    'prefix',
+    'suffix',
+  ])
+  expect(wrapper.text()).toBe('保存')
+  await wrapper.setProps({ loading: true, disabled: true })
+  expect(wrapper.find('[data-testid="prefix"]').exists()).toBe(false)
+  expect(wrapper.find('[data-testid="suffix"]').exists()).toBe(false)
+  expect(wrapper.findAll('svg')).toHaveLength(1)
+  expect(wrapper.text()).toBe('保存')
+  await wrapper.setProps({ loading: false, disabled: false, iconOnly: true, block: true })
+  expect(wrapper.find('[data-testid="prefix"]').exists()).toBe(true)
+  expect(wrapper.find('[data-testid="suffix"]').exists()).toBe(false)
+  expect(wrapper.text()).toBe('')
+  expect(wrapper.classes()).not.toContain('s-button--block')
+  await wrapper.setProps({ iconOnly: false, variant: 'text', ghost: true })
+  expect(wrapper.classes()).not.toContain('s-button--ghost')
+})
+
+it('空槽不生成业务占位，可用五种变体均响应更新', async () => {
+  const wrapper = mount(Button)
+  expect(wrapper.find('span').exists()).toBe(false)
+  for (const variant of ['primary', 'warning', 'success', 'error', 'text'] as const) {
+    await wrapper.setProps({ variant })
+    expect(wrapper.classes()).toContain(`s-button--${variant}`)
+  }
 })

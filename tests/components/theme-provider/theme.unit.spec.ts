@@ -6,7 +6,7 @@ import SerenovaUI, { SButton, SThemeProvider } from '@/index'
 import { SButton as SingleButton } from '@/components/button'
 import { SThemeProvider as SingleProvider } from '@/components/theme-provider'
 import type { ThemeOverrides, ThemeProviderProps } from '@/components/theme-provider'
-import { darkPreset } from '@/theme/presets/dark'
+import { customPreset } from '../../support/theme-preset'
 import { lightPreset } from '@/theme/presets/light'
 
 const button = () => h(SButton, { variant: 'primary' }, () => '保存')
@@ -34,21 +34,21 @@ describe('主题公共契约', () => {
   it('继承共享值、移除覆盖和预设切换不修改输入', async () => {
     const tokens = Object.freeze({ common: Object.freeze({ colorPrimary: '#123456' }) })
     const wrapper = mount(SThemeProvider, {
-      props: { preset: darkPreset, tokens },
+      props: { preset: customPreset, tokens },
       slots: { default: button },
     })
     expect(background(wrapper.get('button').element)).toBe('#123456')
     await wrapper.setProps({ tokens: { common: { colorPrimary: undefined } } })
     expect(background(wrapper.get('button').element)).toBe('#84adff')
     await wrapper.setProps({ preset: lightPreset })
-    expect(background(wrapper.get('button').element)).toBe('#155eef')
+    expect(background(wrapper.get('button').element)).toBe('#7c3aed')
     expect(tokens.common.colorPrimary).toBe('#123456')
-    expect(darkPreset.common.colorPrimary).toBe('#84adff')
+    expect(customPreset.common.colorPrimary).toBe('#84adff')
   })
 
   it('内层重新派生默认值，组件覆盖优先且可重置', () => {
     const wrapper = mount(SThemeProvider, {
-      props: { preset: darkPreset, tokens: { components: { Button: { borderRadius: '20px' } } } },
+      props: { preset: customPreset, tokens: { components: { Button: { borderRadius: '20px' } } } },
       slots: {
         default: () => [
           h(
@@ -62,11 +62,11 @@ describe('主题公共契约', () => {
       },
     })
     const nodes = wrapper.findAll('button').map((w) => w.element)
-    expect(nodes.map(background)).toEqual(['#123456', '#155eef', '#155eef'])
+    expect(nodes.map(background)).toEqual(['#123456', '#7c3aed', '#7c3aed'])
     expect(nodes.map((el) => el.style.getPropertyValue('--s-button-border-radius'))).toEqual([
       '20px',
-      '8px',
-      '8px',
+      '6px',
+      '6px',
     ])
   })
 
@@ -105,12 +105,12 @@ describe('主题公共契约', () => {
   it('服务端输出默认主题和请求隔离的主题变量', async () => {
     const themed = await renderToString(
       createSSRApp({
-        render: () => h(SThemeProvider, { preset: darkPreset }, { default: button }),
+        render: () => h(SThemeProvider, { preset: customPreset }, { default: button }),
       }),
     )
     const plain = await renderToString(createSSRApp({ render: button }))
     expect(themed).toContain('--s-button-background:#84adff')
-    expect(plain).toContain('--s-button-background:#155eef')
+    expect(plain).toContain('--s-button-background:#7c3aed')
     expect(plain).not.toContain('#84adff')
   })
 })
