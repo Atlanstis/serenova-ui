@@ -36,7 +36,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '原生按钮组件，支持四种语义类型、三档尺寸、可组合的 Text 和 Ghost、图标、禁用与加载。Tab 聚焦后可用 Enter 或 Space 激活。nativeType 支持 button（默认）、submit、reset，并保留原生表单行为。',
+          '原生按钮组件，支持四种语义类型、三档尺寸、可组合的 Text 和 Ghost、图标、禁用与加载。Tab 聚焦后可用 Enter 或 Space 激活。',
       },
     },
     controls: {
@@ -65,16 +65,15 @@ const meta = {
     iconOnly: { control: 'boolean', description: '正方形纯图标按钮。' },
     disabled: { control: 'boolean', description: '禁用交互。' },
     loading: { control: 'boolean', description: '显示加载反馈并阻止重复操作。' },
-    nativeType: { control: false, description: '原生 type：button、submit、reset，默认 button。' },
     label: {
       control: 'text',
-      description: '展示文案，仅用于 Story。',
+      description: '展示文案。',
       if: { arg: 'iconOnly', truthy: false },
     },
     icons: {
       control: 'select',
-      options: ['none', 'prefix', 'suffix', 'both'],
-      description: '图标位置，仅用于 Story；纯图标模式固定显示新增图标。',
+      options: ['prefix', 'suffix', 'both'],
+      description: '图标位置；纯图标模式固定显示新增图标。',
       if: { arg: 'iconOnly', truthy: false },
     },
     onClick: { control: false, description: '可用时发出携带原生 MouseEvent 的 click。' },
@@ -82,7 +81,6 @@ const meta = {
   args: {
     variant: 'primary',
     size: 'medium',
-    nativeType: 'button',
     text: false,
     ghost: false,
     iconOnly: false,
@@ -104,7 +102,6 @@ const meta = {
         iconOnly: args.iconOnly,
         disabled: args.disabled,
         loading: args.loading,
-        nativeType: args.nativeType,
       }))
       const showPrefix = computed(
         () => args.iconOnly || args.icons === 'prefix' || args.icons === 'both',

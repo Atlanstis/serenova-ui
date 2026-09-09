@@ -8,7 +8,7 @@
 
 ### Requirement: 提供稳定的 Button 外观 API
 
-`SButton` SHALL 支持 `variant`、`size`、`disabled`、`loading`、`nativeType`、`ghost` 和 `iconOnly`。`variant` MUST 仅支持 `primary / warning / success / error / text`，默认 `primary`，不保留 `default` 或 `danger` 别名；默认尺寸 SHALL 为 `medium`、原生类型 SHALL 为 `button`，所有布尔 Props SHALL 默认为 `false`。`ghost` SHALL 对四种语义类型提供透明底描边外观，在 `text` 下不改变文字按钮外观。`iconOnly` SHALL 在默认布局下保持所选尺寸的正方形。`block` MUST 不再属于公共 Props，组件 SHALL 不再提供内置满宽模式；消费端可通过 class/style 设置普通按钮宽度。
+`SButton` SHALL 支持 `variant`、`size`、`disabled`、`loading`、`ghost` 和 `iconOnly`。`variant` MUST 仅支持 `primary / warning / success / error / text`，默认 `primary`，不保留 `default` 或 `danger` 别名；默认尺寸 SHALL 为 `medium`、原生类型 SHALL 为 `button`，所有布尔 Props SHALL 默认为 `false`。`ghost` SHALL 对四种语义类型提供透明底描边外观，在 `text` 下不改变文字按钮外观。`iconOnly` SHALL 在默认布局下保持所选尺寸的正方形。`block` MUST 不再属于公共 Props，组件 SHALL 不再提供内置满宽模式；消费端可通过 class/style 设置普通按钮宽度。
 
 #### Scenario: 使用默认配置渲染
 
@@ -29,6 +29,11 @@
 
 - **WHEN** 消费端使用公共类型或变体常量
 - **THEN** 仅包含五个新变体，`default` 和 `danger` 不再是有效类型值
+
+#### Scenario: 移除原生类型专用 API
+
+- **WHEN** 消费端使用 Button 公共类型和包根或单组件入口
+- **THEN** ButtonProps 不包含 nativeType 或新增的 type Prop，两个入口均不再导出 ButtonNativeType 和 buttonNativeTypes，不提供旧 API 兼容别名
 
 ### Requirement: 支持内容与图标插槽
 
@@ -85,12 +90,32 @@
 
 ### Requirement: 保留原生按钮与表单语义
 
-`SButton` MUST 使用原生按钮元素，并 SHALL 将 `nativeType` 映射为原生 `type`，同时透传适用的 `data-*`、`form`、`name`、class 和 style 属性。
+`SButton` MUST 使用原生按钮元素，在未传入 `type` 时 SHALL 默认为 `type="button"`。消费端传入的原生 `type` 属性 SHALL 覆盖默认值，支持 `button`、`submit`、`reset` 及其动态更新；移除该属性后 SHALL 恢复默认 `button`。组件 SHALL 继续透传适用的 `data-*`、`form`、`name`、class 和 style 属性。原生类型 MUST 不再由 `nativeType` 控制。可用按钮的鼠标、Enter 和 Space 激活 SHALL 保留相同的原生表单业务结果，禁用或加载 SHALL 阻止激活操作。
 
 #### Scenario: 提交表单
 
-- **WHEN** 位于表单中的 `SButton` 设置 `nativeType="submit"` 并被激活
-- **THEN** 按钮触发浏览器原生表单提交语义
+- **WHEN** 位于表单中的可用 `SButton` 设置 `type="submit"` 并由鼠标、Enter 或 Space 激活
+- **THEN** 每次激活触发一次浏览器原生表单提交语义
+
+#### Scenario: 重置表单
+
+- **WHEN** 表单内容已修改，且 `type="reset"` 的可用按钮由鼠标、Enter 或 Space 激活
+- **THEN** 每次激活触发一次原生重置事件，表单字段恢复初始值
+
+#### Scenario: 默认按钮不提交表单
+
+- **WHEN** 表单中的按钮未传入 type 或显式设置 type="button"，并被激活
+- **THEN** 按钮发出 click，但不提交或重置表单
+
+#### Scenario: 更新和移除原生类型
+
+- **WHEN** 消费端将 type 从 submit 更新为 reset，随后移除该属性，并在各阶段激活按钮
+- **THEN** 原生按钮在 reset 阶段激活时执行重置，移除属性后恢复 button 且激活时不执行提交或重置
+
+#### Scenario: 禁用和加载阻止表单操作
+
+- **WHEN** submit 或 reset 按钮处于 disabled 或 loading 状态，用户尝试用鼠标或键盘激活
+- **THEN** 不发出业务 click，不触发表单提交或重置
 
 #### Scenario: 透传业务属性
 

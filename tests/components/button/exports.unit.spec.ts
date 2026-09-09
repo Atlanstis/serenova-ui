@@ -39,9 +39,6 @@ it('根与单组件入口公开收敛后的类型', () => {
   expectTypeOf<import('@/index').ButtonThemeTokens>().toEqualTypeOf<
     import('@/components/theme-provider').ButtonThemeTokens
   >()
-  expectTypeOf<import('@/components/button').ButtonNativeType>().toEqualTypeOf<
-    'button' | 'submit' | 'reset'
-  >()
 })
 
 it('根与单组件出口均支持 text 与语义类型组合', () => {
@@ -53,4 +50,18 @@ it('根与单组件出口均支持 text 与语义类型组合', () => {
     .toEqualTypeOf<boolean | undefined>()
   expectTypeOf<import('@/index').ButtonThemeTokens>().not.toHaveProperty('textColorText')
   expectTypeOf<import('@/index').ButtonThemeTokens>().toHaveProperty('textButtonColorError')
+})
+
+it('根与单组件入口移除原生类型专用 API', async () => {
+  const individual = await import('@/components/button')
+  for (const entry of [SerenovaExports, individual]) {
+    expect(entry).not.toHaveProperty('buttonNativeTypes')
+  }
+  expectTypeOf<import('@/index').ButtonProps>().not.toHaveProperty('nativeType')
+  expectTypeOf<import('@/components/button').ButtonProps>().not.toHaveProperty('nativeType')
+  expectTypeOf<import('@/index').ButtonProps>().not.toHaveProperty('type')
+  // @ts-expect-error 根入口已删除原生类型别名。
+  expectTypeOf<import('@/index').ButtonNativeType>()
+  // @ts-expect-error 单组件入口已删除原生类型别名。
+  expectTypeOf<import('@/components/button').ButtonNativeType>()
 })

@@ -20,8 +20,6 @@ body {
 }
 
 .preview-theme {
-  min-height: 100vh;
-  padding: 16px;
   background: var(--preview-color-surface);
   color: var(--preview-color-text);
 }

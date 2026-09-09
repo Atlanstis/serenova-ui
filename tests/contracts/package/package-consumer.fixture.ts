@@ -2,12 +2,10 @@
 import type { App, Plugin } from 'vue'
 
 import SerenovaUI, {
-  buttonNativeTypes,
   buttonSizes,
   buttonVariants,
   SButton,
   type ButtonEmits,
-  type ButtonNativeType,
   type ButtonProps,
   type ButtonSize,
   type ButtonSlots,
@@ -25,8 +23,7 @@ const installComponents = (app: App) => {
 
 const variant: ButtonVariant = buttonVariants[0]
 const size: ButtonSize = buttonSizes[0]
-const nativeType: ButtonNativeType = buttonNativeTypes[0]
-const props = { nativeType, size, variant } satisfies ButtonProps
+const props = { size, variant } satisfies ButtonProps
 const slots = { default: () => [] } satisfies ButtonSlots
 const clickArguments: ButtonEmits['click'] = [new MouseEvent('click')]
 
@@ -94,7 +91,6 @@ const removedGhostText: Partial<ButtonThemeTokens> = { ghostColorText: '#123456'
 // @ts-expect-error 根入口也不提供该无效字段。
 const removedRootGhostText: Partial<RootButtonThemeTokens> = { ghostColorText: '#123456' }
 const retainedButtonProps: IndividualButtonProps = {
-  nativeType: 'submit',
   ghost: true,
   iconOnly: true,
 }
@@ -117,3 +113,27 @@ const legacyText: ButtonVariant = 'text'
 // @ts-expect-error 旧文字类型字段已删除。
 const legacyTextColor: Partial<ButtonThemeTokens> = { textColorText: '#123456' }
 void [errorText, legacyText, legacyTextColor]
+
+// @ts-expect-error 根入口已移除原生类型常量。
+import { buttonNativeTypes as removedNativeTypes } from 'serenova-ui'
+// @ts-expect-error 单组件入口已移除原生类型常量。
+import { buttonNativeTypes as removedIndividualNativeTypes } from 'serenova-ui/button'
+// @ts-expect-error 根入口已移除原生类型别名。
+import type { ButtonNativeType as RemovedNativeType } from 'serenova-ui'
+// @ts-expect-error 单组件入口已移除原生类型别名。
+import type { ButtonNativeType as RemovedIndividualNativeType } from 'serenova-ui/button'
+// @ts-expect-error 原生类型改用 type 属性透传。
+const removedNativeProp: ButtonProps = { nativeType: 'submit' }
+// @ts-expect-error 单组件入口也不支持旧 Prop。
+const removedIndividualNativeProp: IndividualButtonProps = { nativeType: 'reset' }
+// @ts-expect-error type 不是新增的组件 Prop。
+const nativeAttrIsNotProp: ButtonProps = { type: 'submit' }
+const removedTypes: [RemovedNativeType, RemovedIndividualNativeType] = ['button', 'reset']
+void [
+  removedNativeTypes,
+  removedIndividualNativeTypes,
+  removedNativeProp,
+  removedIndividualNativeProp,
+  nativeAttrIsNotProp,
+  removedTypes,
+]

@@ -24,3 +24,6 @@ pnpm-debug.log*
 
 # TypeScript incremental build information
 *.tsbuildinfo
+
+# OpenSpec 归档
+/openspec/changes/archive/

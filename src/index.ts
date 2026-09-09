@@ -1,8 +1,7 @@
 export { SButton } from './components/button'
-export { buttonNativeTypes, buttonSizes, buttonVariants } from './components/button'
+export { buttonSizes, buttonVariants } from './components/button'
 export type {
   ButtonEmits,
-  ButtonNativeType,
   ButtonProps,
   ButtonSize,
   ButtonSlots,

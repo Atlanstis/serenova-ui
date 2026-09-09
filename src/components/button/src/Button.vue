@@ -10,7 +10,6 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   size: 'medium',
   disabled: false,
   loading: false,
-  nativeType: 'button',
   text: false,
   ghost: false,
   iconOnly: false,
@@ -57,7 +56,7 @@ function handleClick(event: MouseEvent) {
         's-button--icon-only': iconOnly,
       },
     ]"
-    :type="nativeType"
+    type="button"
     :disabled="isDisabled"
     @click="handleClick"
   >

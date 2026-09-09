@@ -34,7 +34,7 @@ function completeSubmit() {
       <form @submit.prevent="handleSubmit">
         <label for="name">名称</label>
         <input id="name" v-model="name" name="name" required />
-        <SButton native-type="submit" variant="primary" :loading="loading"
+        <SButton type="submit" variant="primary" :loading="loading"
           ><template #icon><SIconAdd /></template>提交</SButton
         >
       </form>

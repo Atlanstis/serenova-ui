@@ -1,3 +1,4 @@
+import { defineComponent, h, nextTick, shallowRef } from 'vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
@@ -110,10 +111,10 @@ describe('SButton', () => {
     expect(wrapper.classes()).toContain('s-button--success')
   })
 
-  it.each(['submit', 'reset'] as const)('将 nativeType=%s 映射到原生 type', (nativeType) => {
-    const wrapper = mount(Button, { props: { nativeType } })
+  it.each(['button', 'submit', 'reset'] as const)('透传原生 type=%s', (type) => {
+    const wrapper = mount(Button, { attrs: { type } })
 
-    expect(wrapper.attributes('type')).toBe(nativeType)
+    expect(wrapper.attributes('type')).toBe(type)
   })
 })
 
@@ -169,3 +170,15 @@ it.each(['primary', 'warning', 'success', 'error'] as const)(
     expect(wrapper.classes()).toContain('s-button--ghost')
   },
 )
+
+it('动态更新并移除 type 后恢复默认 button', async () => {
+  const attrs = shallowRef<{ type?: 'submit' | 'reset' }>({ type: 'submit' })
+  const wrapper = mount(defineComponent(() => () => h(Button, attrs.value)))
+  expect(wrapper.get('button').attributes('type')).toBe('submit')
+  attrs.value = { type: 'reset' }
+  await nextTick()
+  expect(wrapper.get('button').attributes('type')).toBe('reset')
+  attrs.value = {}
+  await nextTick()
+  expect(wrapper.get('button').attributes('type')).toBe('button')
+})

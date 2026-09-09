@@ -28,8 +28,8 @@ const resets = shallowRef(0)
         名称
         <input name="name" value="Serenova" />
       </label>
-      <Button data-testid="submit-target" native-type="submit">提交表单</Button>
-      <Button data-testid="reset-target" native-type="reset">重置表单</Button>
+      <Button data-testid="submit-target" type="submit">提交表单</Button>
+      <Button data-testid="reset-target" type="reset">重置表单</Button>
     </form>
     <output data-testid="submit-count">{{ submits }}</output>
     <output data-testid="reset-count">{{ resets }}</output>

@@ -81,7 +81,7 @@ import 'serenova-ui/button/style.css'
 - `block` 已从 ButtonProps 移除，普通满宽按钮改为 `<SButton style="width: 100%">继续</SButton>`，也可透传消费端 class。旧 JavaScript 调用传入 block 不再提供满宽布局，不新增运行时异常或兼容别名。
 - 删除无效的 `ghostColorText` 配置即可；如需调整文字按钮正常颜色，显式设置 `textButtonColorPrimary`。四种语义 Ghost 配色字段继续有效，`disabledOpacity` 保留。
 - Button Storybook 展示为基础用法、类型与外观、尺寸、禁用与加载、图标用法、交互反馈六项。Playground 与 Interaction 入口保持；Variants 改为 Appearance，SizesAndStates 拆为 Sizes 和 DisabledAndLoading，Slots 与 GhostAndIcons 合并为 Icons，Form 删除，旧链接需要更新。
-- `nativeType` 仍支持 button、submit、reset；Form 的删除仅影响展示，原生表单能力及自动化测试继续保留。
+- Button 通过原生 `type` 属性透传支持 button、submit、reset，未传时默认 button；Form 的删除仅影响展示，原生表单能力及自动化测试继续保留。
 - 图标位置与文案 Controls 仅供展示，不属于 ButtonProps。纯图标模式提供默认图标；固定矩阵不显示无效 Controls。Tab、Enter、Space 和点击使用真实按钮交互。
 
 ## 验证
@@ -99,3 +99,7 @@ unit 验证公共输入输出、类型与导出；integration 验证真实样式
 ### 文字按钮焦点环
 
 `text && !iconOnly` 使用不参与布局的焦点伪元素，环绕内容四周保留 4px 内侧留白，默认 2px 描边、32px 高和 9px 圆角；三档按钮仍保持 28/34/40px 点击高度。内容高度由 `lineHeight` 与 `iconSize` 的较大值决定，焦点描边宽度与颜色沿用 `focusWidth` 和类型焦点色。`focusOffset` 用于普通、Ghost 和纯图标按钮的原生外环；文字内容外环采用固定 4px 内侧留白。
+
+### 原生按钮类型迁移
+
+`nativeType`、`ButtonNativeType` 和 `buttonNativeTypes` 已从公共 API 删除。将 `native-type="submit"` / `native-type="reset"` 改为 `type="submit"` / `type="reset"`，删除旧类型和常量导入。`type` 使用单根按钮的原生属性透传，不属于 ButtonProps；未传入时默认 button，移除透传属性后恢复 button。旧 nativeType 不再控制表单行为，不提供兼容别名。

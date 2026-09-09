@@ -179,7 +179,6 @@ try {
         import assert from 'node:assert/strict'
         import { createApp } from 'vue'
         import SerenovaUI, {
-          buttonNativeTypes,
           buttonSizes,
           buttonVariants,
           SButton,
@@ -199,7 +198,8 @@ try {
         assert.ok(import.meta.resolve(${packageSpecifier} + '/button/style.css'))
         assert.deepEqual(buttonVariants, ['primary', 'warning', 'success', 'error'])
         assert.deepEqual(buttonSizes, ['small', 'medium', 'large'])
-        assert.deepEqual(buttonNativeTypes, ['button', 'submit', 'reset'])
+        assert.equal('buttonNativeTypes' in library, false)
+        assert.equal('buttonNativeTypes' in (await import(${packageSpecifier} + '/button')), false)
         assert.match(import.meta.resolve(${styleSpecifier}), /serenova-ui\\.css$/)
 
         const app = createApp({})
@@ -222,6 +222,8 @@ try {
         assert.equal(typeof library.default.install, 'function')
         assert.equal(typeof library.SButton.install, 'function')
         assert.equal('components' in library, false)
+        assert.equal('buttonNativeTypes' in library, false)
+        assert.equal('buttonNativeTypes' in require(${packageSpecifier} + '/button'), false)
         assert.deepEqual(library.buttonSizes, ['small', 'medium', 'large'])
         for (const sub of ['button', 'theme-provider', 'themes/light', 'icons']) {
           assert.ok(Object.keys(require(${packageSpecifier} + '/' + sub)).length > 0)

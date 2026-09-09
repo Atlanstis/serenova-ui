@@ -116,7 +116,7 @@ Button Story SHALL 仅显示实际影响该示例的可编辑 Controls；固定�
 #### Scenario: 调节展示参数
 
 - **WHEN** 维护者编辑某个 Story 中显示的 Control
-- **THEN** 对应渲染或业务行为随之变化，固定比较维度不提供无效 Control，block 不再出现在参数说明中
+- **THEN** 对应渲染或业务行为随之变化，固定比较维度不提供无效 Control，block 和 nativeType 不再出现在参数说明中
 
 #### Scenario: 观察多种激活方式
 
@@ -127,3 +127,8 @@ Button Story SHALL 仅显示实际影响该示例的可编辑 Controls；固定�
 
 - **WHEN** 维护者重复运行 play，或在允许调节的范围内设置 disabled 或 loading
 - **THEN** 调试以本次激活前的结果为基准，或从确定初始状态开始；不可用时计数不增加，不执行无条件成功点击断言
+
+#### Scenario: 移除原生类型专用展示参数
+
+- **WHEN** 维护者查看 Button Docs、参数表和基础用法配置
+- **THEN** 不再出现 nativeType 的属性说明、参数定义和默认值，Story 不再向组件传递 nativeType，也不新增替代的 type Control 或 Form Story
