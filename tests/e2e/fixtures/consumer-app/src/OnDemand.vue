@@ -24,6 +24,9 @@ const loading = shallowRef(false)
         ><template #icon><SIconAdd /></template>计数<template #suffixIcon
           ><SIconArrowRight /></template
       ></SButton>
+      <SButton variant="error" text :loading="loading" data-testid="error-text" @click="count++"
+        >删除</SButton
+      >
     </SThemeProvider>
     <output>{{ count }}</output>
   </main>

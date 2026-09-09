@@ -233,3 +233,13 @@ npm publish --access public
 ## License
 
 本项目采用 MIT License，详见 [LICENSE](./LICENSE)。
+
+### 文字按钮与语义类型组合
+
+```vue
+<SButton text>查看详情</SButton>
+<SButton variant="error" text>删除</SButton>
+<SButton variant="success" text>确认</SButton>
+```
+
+`text` 和 `ghost` 均默认为 `false`，同时使用时 `text` 优先。文字按钮不设最小宽度、水平内边距为 0，多个文字操作由容器 `gap` 控制间距；纯图标按钮保持正方形。旧 `variant="text"` 需迁移为 `text`，`buttonVariants` 仅保留四种语义类型，主题字段迁移见 [主题文档](docs/styling-and-theming.md)。

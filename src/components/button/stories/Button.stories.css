@@ -55,3 +55,9 @@
 .button-story__matrix td > span {
   color: var(--preview-color-text-muted);
 }
+.button-story__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}

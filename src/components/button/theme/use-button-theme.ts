@@ -59,15 +59,6 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
         t.colorErrorDisabled,
         t.colorOnError,
       ),
-      Text: {
-        ...primary,
-        background: 'transparent',
-        backgroundHover: 'transparent',
-        backgroundPressed: 'transparent',
-        backgroundDisabled: 'transparent',
-        borderColor: 'transparent',
-        textColor: t.colorAccent,
-      },
     }
     const defaults = {
       ...primary,
@@ -85,7 +76,6 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
       waveDuration: '600ms',
       waveSpread: '5px',
       shadow: '0 2px 3px rgba(64, 38, 102, 0.08)',
-      textColorDisabled: t.colorTextDisabled,
       heightSmall: t.heightSmall,
       paddingSmall: t.space3,
       fontSizeSmall: t.fontSizeSmall,
@@ -101,9 +91,20 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
     } as ButtonThemeTokens
     for (const [variant, values] of Object.entries(variants)) {
       for (const [key, value] of Object.entries(values)) {
-        // 文字按钮不使用 Ghost 配色，不生成无效的公开覆盖字段。
-        if (variant === 'Text' && key === 'ghostColor') continue
         defaults[`${key}${variant}` as keyof ButtonThemeTokens] = value
+      }
+    }
+    for (const [variant, values] of Object.entries(variants)) {
+      const colors = {
+        textButtonColor: values.ghostColor,
+        textButtonColorHover: values.backgroundHover,
+        textButtonColorPressed: values.backgroundPressed,
+        textButtonColorDisabled:
+          variant === 'Primary' ? t.colorTextDisabled : values.backgroundDisabled,
+      }
+      for (const [key, value] of Object.entries(colors)) {
+        defaults[`${key}${variant}` as keyof ButtonThemeTokens] = value
+        if (variant === 'Primary') defaults[key as keyof ButtonThemeTokens] = value
       }
     }
     // 无后缀字段代表 primary 基础覆盖；显式 Primary 字段优先。
@@ -111,41 +112,51 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
     const tokens = mergeKnown(defaults, overrides)
     const variant = props.variant ?? 'primary'
     const suffix = variant[0]!.toUpperCase() + variant.slice(1)
-    const get = (key: keyof typeof primary) => {
+    const get = (
+      key:
+        | keyof typeof primary
+        | 'textButtonColor'
+        | 'textButtonColorHover'
+        | 'textButtonColorPressed'
+        | 'textButtonColorDisabled',
+    ) => {
       const variantKey = `${key}${suffix}` as keyof ButtonThemeTokens
       return variant === 'primary'
         ? (overrides?.[variantKey] ?? overrides?.[key] ?? tokens[variantKey])
         : tokens[variantKey]
     }
-    const text = variant === 'text'
+    const text = !!props.text
     const ghost = !!props.ghost && !text
     const disabled = props.disabled || props.loading
     const foreground = disabled
       ? ghost
         ? get('backgroundDisabled')
         : text
-          ? tokens.textColorDisabled
+          ? get('textButtonColorDisabled')
           : get('textColor')
-      : ghost
-        ? get('ghostColor')
-        : get('textColor')
+      : text
+        ? get('textButtonColor')
+        : ghost
+          ? get('ghostColor')
+          : get('textColor')
     const size = props.size ?? 'medium'
     const sizeSuffix = size[0]!.toUpperCase() + size.slice(1)
     const sized = (key: string) => tokens[`${key}${sizeSuffix}` as keyof ButtonThemeTokens]
     return {
-      '--s-button-background': ghost
+      '--s-button-background':
+        ghost || text ? 'transparent' : disabled ? get('backgroundDisabled') : get('background'),
+      '--s-button-background-hover': ghost || text ? 'transparent' : get('backgroundHover'),
+      '--s-button-background-pressed': ghost || text ? 'transparent' : get('backgroundPressed'),
+      '--s-button-border-color': text
         ? 'transparent'
-        : disabled
-          ? get('backgroundDisabled')
-          : get('background'),
-      '--s-button-background-hover': ghost ? 'transparent' : get('backgroundHover'),
-      '--s-button-background-pressed': ghost ? 'transparent' : get('backgroundPressed'),
-      '--s-button-border-color': ghost
-        ? foreground
-        : disabled
-          ? get('backgroundDisabled')
-          : get('borderColor'),
+        : ghost
+          ? foreground
+          : disabled
+            ? get('backgroundDisabled')
+            : get('borderColor'),
       '--s-button-text-color': foreground,
+      '--s-button-text-color-hover': text ? get('textButtonColorHover') : foreground,
+      '--s-button-text-color-pressed': text ? get('textButtonColorPressed') : foreground,
       '--s-button-focus-color': get('focusColor'),
       '--s-button-wave-color': ghost ? get('ghostColor') : get('background'),
       '--s-button-border-radius': tokens.borderRadius,
@@ -161,9 +172,10 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
       '--s-button-focus-offset': tokens.focusOffset,
       '--s-button-wave-duration': tokens.waveDuration,
       '--s-button-wave-spread': tokens.waveSpread,
-      '--s-button-shadow': variant === 'primary' && !ghost && !disabled ? tokens.shadow : 'none',
+      '--s-button-shadow':
+        variant === 'primary' && !ghost && !text && !disabled ? tokens.shadow : 'none',
       '--s-button-height': sized('height'),
-      '--s-button-padding': props.iconOnly ? '0px' : sized('padding'),
+      '--s-button-padding': props.iconOnly || text ? '0px' : sized('padding'),
       '--s-button-font-size': sized('fontSize'),
       '--s-button-min-width': props.iconOnly ? sized('height') : text ? '0px' : sized('minWidth'),
     }

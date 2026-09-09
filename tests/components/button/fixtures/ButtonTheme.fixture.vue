@@ -2,7 +2,7 @@
 import { SButton, SThemeProvider, buttonVariants } from '@/index'
 
 const colors = {
-  textColorText: '#123456',
+  textButtonColorPrimary: '#123456',
   ghostColorPrimary: '#234567',
   ghostColorWarning: '#345678',
   ghostColorSuccess: '#456789',
@@ -12,6 +12,7 @@ const colors = {
 
 <template>
   <SThemeProvider :tokens="{ components: { Button: colors } }">
+    <SButton text>text</SButton>
     <SButton v-for="variant in buttonVariants" :key="variant" :variant="variant" ghost>
       {{ variant }}
     </SButton>

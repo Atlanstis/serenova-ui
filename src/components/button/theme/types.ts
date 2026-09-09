@@ -21,7 +21,6 @@ export interface ButtonThemeTokens {
   waveDuration: string
   waveSpread: string
   shadow: string
-  textColorDisabled: string
   heightSmall: string
   paddingSmall: string
   fontSizeSmall: string
@@ -66,13 +65,26 @@ export interface ButtonThemeTokens {
   textColorError: string
   focusColorError: string
   ghostColorError: string
-  backgroundText: string
-  backgroundHoverText: string
-  backgroundPressedText: string
-  backgroundDisabledText: string
-  borderColorText: string
-  textColorText: string
-  focusColorText: string
+  textButtonColor: string
+  textButtonColorHover: string
+  textButtonColorPressed: string
+  textButtonColorDisabled: string
+  textButtonColorPrimary: string
+  textButtonColorHoverPrimary: string
+  textButtonColorPressedPrimary: string
+  textButtonColorDisabledPrimary: string
+  textButtonColorWarning: string
+  textButtonColorHoverWarning: string
+  textButtonColorPressedWarning: string
+  textButtonColorDisabledWarning: string
+  textButtonColorSuccess: string
+  textButtonColorHoverSuccess: string
+  textButtonColorPressedSuccess: string
+  textButtonColorDisabledSuccess: string
+  textButtonColorError: string
+  textButtonColorHoverError: string
+  textButtonColorPressedError: string
+  textButtonColorDisabledError: string
 }
 
 export const buttonThemeKeys = [
@@ -98,7 +110,6 @@ export const buttonThemeKeys = [
   'waveDuration',
   'waveSpread',
   'shadow',
-  'textColorDisabled',
   'heightSmall',
   'paddingSmall',
   'fontSizeSmall',
@@ -143,11 +154,24 @@ export const buttonThemeKeys = [
   'textColorError',
   'focusColorError',
   'ghostColorError',
-  'backgroundText',
-  'backgroundHoverText',
-  'backgroundPressedText',
-  'backgroundDisabledText',
-  'borderColorText',
-  'textColorText',
-  'focusColorText',
+  'textButtonColor',
+  'textButtonColorHover',
+  'textButtonColorPressed',
+  'textButtonColorDisabled',
+  'textButtonColorPrimary',
+  'textButtonColorHoverPrimary',
+  'textButtonColorPressedPrimary',
+  'textButtonColorDisabledPrimary',
+  'textButtonColorWarning',
+  'textButtonColorHoverWarning',
+  'textButtonColorPressedWarning',
+  'textButtonColorDisabledWarning',
+  'textButtonColorSuccess',
+  'textButtonColorHoverSuccess',
+  'textButtonColorPressedSuccess',
+  'textButtonColorDisabledSuccess',
+  'textButtonColorError',
+  'textButtonColorHoverError',
+  'textButtonColorPressedError',
+  'textButtonColorDisabledError',
 ] as const satisfies readonly (keyof ButtonThemeTokens)[]

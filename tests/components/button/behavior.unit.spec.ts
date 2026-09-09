@@ -139,15 +139,33 @@ it('前后图标、加载替换和纯图标组合保持内容契约', async () =
   expect(wrapper.find('[data-testid="prefix"]').exists()).toBe(true)
   expect(wrapper.find('[data-testid="suffix"]').exists()).toBe(false)
   expect(wrapper.text()).toBe('')
-  await wrapper.setProps({ iconOnly: false, variant: 'text', ghost: true })
+  await wrapper.setProps({ iconOnly: false, text: true, ghost: true })
   expect(wrapper.classes()).not.toContain('s-button--ghost')
 })
 
-it('空槽不生成业务占位，可用五种变体均响应更新', async () => {
+it('空槽不生成业务占位，可用四种变体均响应更新', async () => {
   const wrapper = mount(Button)
   expect(wrapper.find('span').exists()).toBe(false)
-  for (const variant of ['primary', 'warning', 'success', 'error', 'text'] as const) {
+  for (const variant of ['primary', 'warning', 'success', 'error'] as const) {
     await wrapper.setProps({ variant })
     expect(wrapper.classes()).toContain(`s-button--${variant}`)
   }
 })
+
+it.each(['primary', 'warning', 'success', 'error'] as const)(
+  'text 与 %s 组合并优先于 ghost',
+  async (variant) => {
+    const wrapper = mount(Button, {
+      props: { variant, text: true, ghost: true },
+      slots: { default: '操作' },
+    })
+    expect(wrapper.classes()).toContain(`s-button--${variant}`)
+    expect(wrapper.classes()).toContain('s-button--text')
+    expect(wrapper.classes()).not.toContain('s-button--ghost')
+    await wrapper.trigger('click')
+    expect(wrapper.emitted('click')).toHaveLength(1)
+    await wrapper.setProps({ text: false })
+    expect(wrapper.classes()).not.toContain('s-button--text')
+    expect(wrapper.classes()).toContain('s-button--ghost')
+  },
+)

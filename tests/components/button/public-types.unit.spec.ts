@@ -14,13 +14,11 @@ import {
 
 describe('Button 公共类型', () => {
   it('公开与运行时枚举一致的联合类型', () => {
-    expect(buttonVariants).toEqual(['primary', 'warning', 'success', 'error', 'text'])
+    expect(buttonVariants).toEqual(['primary', 'warning', 'success', 'error'])
     expect(buttonSizes).toEqual(['small', 'medium', 'large'])
     expect(buttonNativeTypes).toEqual(['button', 'submit', 'reset'])
 
-    expectTypeOf<ButtonVariant>().toEqualTypeOf<
-      'primary' | 'warning' | 'success' | 'error' | 'text'
-    >()
+    expectTypeOf<ButtonVariant>().toEqualTypeOf<'primary' | 'warning' | 'success' | 'error'>()
     expectTypeOf<ButtonSize>().toEqualTypeOf<'small' | 'medium' | 'large'>()
     expectTypeOf<ButtonNativeType>().toEqualTypeOf<'button' | 'submit' | 'reset'>()
     expectTypeOf<ButtonProps>().not.toHaveProperty('block')
@@ -41,4 +39,11 @@ describe('Button 公共类型', () => {
     // @ts-expect-error 原生 button 不支持 menu 类型。
     expect(acceptNativeType('menu')).toBe(true)
   })
+})
+
+it('text 是独立布尔属性，旧 text 变体被类型拒绝', () => {
+  expectTypeOf<ButtonProps>().toHaveProperty('text').toEqualTypeOf<boolean | undefined>()
+  // @ts-expect-error text 已迁移为独立属性。
+  const legacy: ButtonVariant = 'text'
+  expect(legacy).toBe('text')
 })

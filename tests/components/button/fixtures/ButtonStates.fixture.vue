@@ -11,6 +11,8 @@ const count = ref(0)
   <SButton data-testid="target" :disabled="disabled" :loading="loading" @click="count++">
     <template #icon><SIconAdd /></template>操作<template #suffixIcon><SIconArrowRight /></template>
   </SButton>
+  <SButton text data-testid="text">继续</SButton>
+  <SButton text disabled data-testid="text-disabled">继续</SButton>
   <output>{{ count }}</output>
   <div v-for="variant in buttonVariants" :key="variant">
     <SButton :data-testid="variant" :variant="variant">继续</SButton>

@@ -99,7 +99,7 @@ const retainedButtonProps: IndividualButtonProps = {
   iconOnly: true,
 }
 const retainedColors: Partial<RootButtonThemeTokens> = {
-  textColorText: '#123456',
+  textButtonColorPrimary: '#123456',
   ghostColorPrimary: '#654321',
 }
 void [
@@ -110,3 +110,10 @@ void [
   retainedButtonProps,
   retainedColors,
 ]
+
+const errorText = { variant: 'error', text: true } satisfies ButtonProps & IndividualButtonProps
+// @ts-expect-error text 已移出语义类型。
+const legacyText: ButtonVariant = 'text'
+// @ts-expect-error 旧文字类型字段已删除。
+const legacyTextColor: Partial<ButtonThemeTokens> = { textColorText: '#123456' }
+void [errorText, legacyText, legacyTextColor]

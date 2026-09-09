@@ -1,6 +1,6 @@
 import type { VNode } from 'vue'
 
-export const buttonVariants = ['primary', 'warning', 'success', 'error', 'text'] as const
+export const buttonVariants = ['primary', 'warning', 'success', 'error'] as const
 export const buttonSizes = ['small', 'medium', 'large'] as const
 export const buttonNativeTypes = ['button', 'submit', 'reset'] as const
 
@@ -11,6 +11,7 @@ export type ButtonNativeType = (typeof buttonNativeTypes)[number]
 export interface ButtonProps {
   variant?: ButtonVariant
   size?: ButtonSize
+  text?: boolean
   ghost?: boolean
   iconOnly?: boolean
   disabled?: boolean

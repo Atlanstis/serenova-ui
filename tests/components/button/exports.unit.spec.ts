@@ -43,3 +43,14 @@ it('根与单组件入口公开收敛后的类型', () => {
     'button' | 'submit' | 'reset'
   >()
 })
+
+it('根与单组件出口均支持 text 与语义类型组合', () => {
+  expectTypeOf<import('@/index').ButtonProps>()
+    .toHaveProperty('text')
+    .toEqualTypeOf<boolean | undefined>()
+  expectTypeOf<import('@/components/button').ButtonProps>()
+    .toHaveProperty('text')
+    .toEqualTypeOf<boolean | undefined>()
+  expectTypeOf<import('@/index').ButtonThemeTokens>().not.toHaveProperty('textColorText')
+  expectTypeOf<import('@/index').ButtonThemeTokens>().toHaveProperty('textButtonColorError')
+})

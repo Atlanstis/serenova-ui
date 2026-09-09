@@ -197,7 +197,7 @@ try {
         assert.equal(SThemeProvider, library.SThemeProvider)
         assert.equal((await import(${packageSpecifier} + '/button')).SButton, SButton)
         assert.ok(import.meta.resolve(${packageSpecifier} + '/button/style.css'))
-        assert.deepEqual(buttonVariants, ['primary', 'warning', 'success', 'error', 'text'])
+        assert.deepEqual(buttonVariants, ['primary', 'warning', 'success', 'error'])
         assert.deepEqual(buttonSizes, ['small', 'medium', 'large'])
         assert.deepEqual(buttonNativeTypes, ['button', 'submit', 'reset'])
         assert.match(import.meta.resolve(${styleSpecifier}), /serenova-ui\\.css$/)
