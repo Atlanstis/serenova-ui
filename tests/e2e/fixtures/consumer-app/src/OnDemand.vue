@@ -4,7 +4,6 @@ import { SIconAdd, SIconArrowRight } from 'serenova-ui/icons'
 import { SButton } from 'serenova-ui/button'
 import { SThemeProvider } from 'serenova-ui/theme-provider'
 import { lightPreset } from 'serenova-ui/themes/light'
-import 'serenova-ui/button/style.css'
 
 const custom = shallowRef(false)
 const count = shallowRef(0)

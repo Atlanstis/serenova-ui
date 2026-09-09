@@ -1,13 +1,10 @@
+import { autoComponentStyles } from '../../../../../build/auto-component-styles.ts'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { componentStyles } from '../../../../../build/component-styles.ts'
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    componentStyles({ selected: 'selected/style.css', unrelated: 'unrelated/style.css' }),
-  ],
+  plugins: [vue(), autoComponentStyles()],
   build: {
     cssCodeSplit: true,
     lib: {

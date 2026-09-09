@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { createApp, createSSRApp, h } from 'vue'
-import { renderToString } from 'vue/server-renderer'
+import { createApp, h } from 'vue'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import SerenovaUI, { SButton, SThemeProvider } from '@/index'
 import { SButton as SingleButton } from '@/components/button'
@@ -100,17 +99,5 @@ describe('主题公共契约', () => {
       preset: null,
     }
     expect(invalid.preset).toBeNull()
-  })
-
-  it('服务端输出默认主题和请求隔离的主题变量', async () => {
-    const themed = await renderToString(
-      createSSRApp({
-        render: () => h(SThemeProvider, { preset: customPreset }, { default: button }),
-      }),
-    )
-    const plain = await renderToString(createSSRApp({ render: button }))
-    expect(themed).toContain('--s-button-background:#84adff')
-    expect(plain).toContain('--s-button-background:#7c3aed')
-    expect(plain).not.toContain('#84adff')
   })
 })

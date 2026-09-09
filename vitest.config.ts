@@ -1,11 +1,12 @@
+import { autoComponentStyles } from './build/auto-component-styles.ts'
 import { playwright } from '@vitest/browser-playwright'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [vue()],
-  optimizeDeps: { include: ['vue', 'vue/server-renderer'] },
+  plugins: [vue(), autoComponentStyles()],
+  optimizeDeps: { include: ['vue'] },
   resolve: {
     dedupe: ['vue', '@vue/runtime-core', '@vue/runtime-dom', '@vue/reactivity', '@vue/shared'],
     alias: {

@@ -8,11 +8,11 @@
 
 ### Requirement: 无主题提供者时组件独立可用
 
-公共组件 MUST 在仅加载自身所需公共样式且没有 `SThemeProvider` 时使用默认浅色主题，无需额外加载共享 token CSS。Button 默认主题 MUST 对齐 button-component 的 Figma 浅色契约，图标 SHALL 无需独立 CSS。
+公共组件 MUST 在无需手动导入 CSS 且没有 `SThemeProvider` 时使用默认浅色主题，无需额外加载共享 token CSS。Button 默认主题 MUST 对齐 button-component 的 Figma 浅色契约，图标 SHALL 无需独立 CSS。
 
 #### Scenario: 单独使用按钮
 
-- **WHEN** 使用者加载 Button 与其样式并直接渲染按钮
+- **WHEN** 使用者仅导入 Button 并在客户端直接渲染按钮
 - **THEN** 按钮具有新的 Figma 默认外观及各 Props 对应状态样式，不依赖全局主题初始化
 
 ### Requirement: 主题提供者不改变布局或交互
@@ -61,12 +61,3 @@
 
 - **WHEN** Provider 下的 Button 经 Teleport 渲染到 `body` 并切换主题
 - **THEN** 按钮外观与原 Provider 内的按钮保持一致，不采用目标容器所属的其他主题上下文
-
-### Requirement: 主题渲染支持服务端隔离
-
-主题解析 MUST 不要求浏览器 DOM，服务端渲染 MUST 输出当前主题所需的组件样式变量，且不同渲染请求的主题 MUST 相互隔离。在服务端和客户端输入相同时，初始主题 MUST 一致。
-
-#### Scenario: 连续渲染不同主题
-
-- **WHEN** 服务端先后渲染自定义浅色和默认主题的组件树
-- **THEN** 各输出携带各自主题值，默认主题不受前一次渲染污染

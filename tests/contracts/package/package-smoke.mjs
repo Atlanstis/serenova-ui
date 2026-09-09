@@ -1,4 +1,4 @@
-import { build } from 'vite'
+import { build, createServer } from 'vite'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import {
@@ -43,23 +43,19 @@ assert(rootExport, '缺少包根导出映射。')
 const esmPath = packageTarget(rootExport.import)
 const cjsPath = packageTarget(rootExport.require)
 const typePath = packageTarget(rootExport.types)
-const stylePath = packageTarget(packageJson.exports?.['./style.css'])
 
 await Promise.all([
   assertNonEmptyFile(esmPath, 'ESM 产物'),
   assertNonEmptyFile(cjsPath, 'CommonJS 产物'),
   assertNonEmptyFile(typePath, 'TypeScript 声明入口'),
-  assertNonEmptyFile(stylePath, 'CSS 产物'),
 ])
 
 const require = createRequire(import.meta.url)
 const resolvedEsmPath = fileURLToPath(import.meta.resolve(packageName))
 const resolvedCjsPath = require.resolve(packageName)
-const resolvedStylePath = fileURLToPath(import.meta.resolve(`${packageName}/style.css`))
 
 assert.equal(resolvedEsmPath, esmPath, '包根 ESM 导出没有解析到约定产物。')
 assert.equal(resolvedCjsPath, cjsPath, '包根 CommonJS 导出没有解析到约定产物。')
-assert.equal(resolvedStylePath, stylePath, '样式子路径没有解析到约定产物。')
 
 const esmFiles = await readdir(resolve(repositoryRoot, 'dist'), { recursive: true })
 const esmSource = (
@@ -96,24 +92,11 @@ assert(
   'npm 包包含约定范围以外的文件。',
 )
 
-async function readCss(path, visited = new Set()) {
-  if (visited.has(path)) return ''
-  visited.add(path)
-  let css = await readFile(path, 'utf8')
-  for (const match of css.matchAll(/@import\s+["']([^"']+)["'];/g)) {
-    css += await readCss(resolve(dirname(path), match[1]), visited)
-  }
-  return css
-}
-
-const componentCss = await readCss(packageTarget(packageJson.exports['./button/style.css']))
-assert.match(componentCss, /s-button/)
-assert.doesNotMatch(componentCss, /:root|data-theme|button-story/)
-assert.equal(
-  (await readCss(stylePath)).replace(/@import[^;]+;/g, '').trim(),
-  componentCss.replace(/@import[^;]+;/g, '').trim(),
-)
-assert.deepEqual(packageJson.sideEffects, ['**/*.css'])
+assert.equal(packageJson.style, undefined)
+assert.equal(packageJson.sideEffects, false)
+assert(!esmFiles.some((name) => name.endsWith('.css')), '发布产物不得包含独立 CSS 文件')
+assert.match(esmSource, /s-button/)
+assert.doesNotMatch(esmSource, /:root|data-theme|button-story/)
 
 const temporaryRoot = await mkdtemp(resolve(tmpdir(), 'serenova-ui-package-smoke-'))
 
@@ -124,35 +107,42 @@ try {
     logLevel: 'silent',
     build: { outDir: splitOutput },
   })
-  const selectedCss = await readCss(resolve(splitOutput, 'selected/style.css'))
-  assert.match(selectedCss, /s-button/)
-  assert.match(selectedCss, /fixture-shared/)
-  assert.doesNotMatch(selectedCss, /fixture-unrelated/)
-  assert.match(await readCss(resolve(splitOutput, 'serenova-ui.css')), /fixture-unrelated/)
-
   const splitResults = Array.isArray(splitBuild) ? splitBuild : [splitBuild]
   const selectedEntry = splitResults
     .flatMap((result) => result.output)
     .find((item) => item.type === 'chunk' && item.isEntry && item.name === 'selected')
   assert.ok(selectedEntry)
   const consumerEntry = resolve(temporaryRoot, 'consume.js')
+  // 默认消费不导入 CSS：发布 JS 自身包含所需规则且未被 tree shaking 丢弃。
   await writeFile(
     consumerEntry,
-    `import { SButton } from './split/${selectedEntry.fileName}';\nimport './split/selected/style.css';\nglobalThis.selectedButton = SButton;`,
+    `import { SButton } from './split/${selectedEntry.fileName}';\nglobalThis.selectedButton = SButton;`,
   )
-  const consumption = await build({
+  const automatic = await build({
     configFile: false,
     logLevel: 'silent',
     build: { write: false, rolldownOptions: { input: consumerEntry, external: ['vue'] } },
   })
-  const consumerCss = (Array.isArray(consumption) ? consumption : [consumption])
-    .flatMap((result) => result.output)
-    .filter((item) => item.type === 'asset' && item.fileName.endsWith('.css'))
-    .map((item) => item.source)
+  const automaticOutput = (Array.isArray(automatic) ? automatic : [automatic]).flatMap(
+    (result) => result.output,
+  )
+  const automaticCode = automaticOutput
+    .filter((item) => item.type === 'chunk')
+    .map((item) => item.code)
     .join('\n')
-  assert.match(consumerCss, /s-button/)
-  assert.match(consumerCss, /fixture-shared/)
-  assert.doesNotMatch(consumerCss, /fixture-unrelated/)
+  assert.match(automaticCode, /s-button/)
+  assert.match(automaticCode, /fixture-shared/)
+  assert.match(automaticCode, /data:image\/svg\+xml/)
+  assert.doesNotMatch(automaticCode, /url\([^)]*marker\.svg/)
+  assert.match(automaticCode, /data-serenova-style/)
+  assert.match(automaticCode, /@keyframes/)
+  assert.match(automaticCode, /data-v-/)
+  assert.doesNotMatch(automaticCode, /fixture-unrelated/)
+  assert.equal(
+    automaticOutput.filter((item) => item.type === 'asset' && item.fileName.endsWith('.css'))
+      .length,
+    0,
+  )
 
   const installedPackageRoot = resolve(temporaryRoot, 'node_modules', packageName)
   await mkdir(installedPackageRoot, { recursive: true })
@@ -169,7 +159,6 @@ try {
   await symlink(vueTarget, vueLink, 'dir')
 
   const packageSpecifier = JSON.stringify(packageName)
-  const styleSpecifier = JSON.stringify(`${packageName}/style.css`)
   execFileSync(
     process.execPath,
     [
@@ -195,12 +184,10 @@ try {
         const { SThemeProvider } = await import(${packageSpecifier} + '/theme-provider')
         assert.equal(SThemeProvider, library.SThemeProvider)
         assert.equal((await import(${packageSpecifier} + '/button')).SButton, SButton)
-        assert.ok(import.meta.resolve(${packageSpecifier} + '/button/style.css'))
         assert.deepEqual(buttonVariants, ['primary', 'warning', 'success', 'error'])
         assert.deepEqual(buttonSizes, ['small', 'medium', 'large'])
         assert.equal('buttonNativeTypes' in library, false)
         assert.equal('buttonNativeTypes' in (await import(${packageSpecifier} + '/button')), false)
-        assert.match(import.meta.resolve(${styleSpecifier}), /serenova-ui\\.css$/)
 
         const app = createApp({})
         app.use(SerenovaUI)
@@ -266,7 +253,7 @@ try {
     assert.equal(iconLibrary[name], rootLibrary[name])
     assert.equal(typeof iconLibrary[name].install, 'function')
   }
-  for (const subpath of ['themes/dark', 'icons/add']) {
+  for (const subpath of ['themes/dark', 'icons/add', 'style.css', 'button/style.css', 'ssr']) {
     assert.throws(() => installedRequire.resolve(`${packageName}/${subpath}`), {
       code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
     })
@@ -331,5 +318,29 @@ try {
 }
 
 console.log(
-  'dist 包级冒烟检查通过：包名解析、ESM、CommonJS、插件、SButton、CSS、声明和 Vue external 均可消费。',
+  'dist 包级冒烟检查通过：包名解析、ESM、CommonJS、插件、SButton、自动样式、声明和 Vue external 均可消费。',
 )
+
+// 通过开发服务模块转换验证 inline 样式和 HMR 关联，无需打开页面。
+const development = await createServer({
+  configFile: resolve(repositoryRoot, 'vite.config.ts'),
+  server: { middlewareMode: true },
+  optimizeDeps: { noDiscovery: true, include: [] },
+  logLevel: 'silent',
+})
+try {
+  const result = await development.transformRequest('/src/components/button/src/Button.vue')
+  assert.ok(result)
+  assert.match(result.code, /__serenova_withStyles/)
+  assert.match(result.code, /import\.meta\.hot\.accept/)
+  const request = result.code.match(/import __serenova_css_0 from ["']([^"']+)["']/)?.[1]
+  assert.ok(request)
+  assert.match(request, /inline/)
+  const style = await development.transformRequest(request)
+  assert.ok(style)
+  assert.match(style.code, /s-button/)
+  assert.match(style.code, /data-v-/)
+  assert.doesNotMatch(style.code, /__vite__updateStyle/)
+} finally {
+  await development.close()
+}

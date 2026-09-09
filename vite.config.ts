@@ -1,9 +1,9 @@
+import { autoComponentStyles } from './build/auto-component-styles.ts'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { componentStyles } from './build/component-styles.ts'
 
 export default defineConfig({
-  plugins: [vue(), componentStyles({ 'button/index': 'button/style.css' })],
+  plugins: [vue(), autoComponentStyles()],
   build: {
     cssCodeSplit: true,
     lib: {

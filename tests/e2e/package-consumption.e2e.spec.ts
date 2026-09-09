@@ -61,3 +61,28 @@ test('发布包支持错误色文字操作及加载阻断', async ({ page }) => 
   await expect(target).toHaveCSS('color', 'rgb(230, 171, 174)')
   await expect(target.locator('svg')).toHaveCount(1)
 })
+
+for (const entry of ['named']) {
+  test(`${entry} 接入保持默认主题、style 覆盖和样式去重`, async ({ page }) => {
+    await page.goto(`/${entry}.html`)
+    await expect(page.getByRole('button', { name: '根入口按钮' })).toHaveCSS(
+      'background-color',
+      'rgb(124, 58, 237)',
+    )
+    await expect(page.getByRole('button', { name: '覆盖按钮' })).toHaveCSS(
+      'background-color',
+      'rgb(18, 52, 86)',
+    )
+    await expect(page.locator('head style[data-serenova-style]')).toHaveCount(1)
+    if (entry === 'named') {
+      const css = await page.locator('head').evaluate((head) =>
+        Array.from(
+          head.querySelectorAll('link[rel="stylesheet"], style:not([data-serenova-style])'),
+        )
+          .map((node) => node.textContent || node.getAttribute('href'))
+          .join(''),
+      )
+      expect(css).not.toContain('s-button')
+    }
+  })
+}

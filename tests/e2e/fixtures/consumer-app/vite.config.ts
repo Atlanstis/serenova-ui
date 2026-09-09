@@ -12,10 +12,6 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^serenova-ui\/style\.css$/,
-        replacement: resolve(projectRoot, 'dist/serenova-ui.css'),
-      },
-      {
         find: /^serenova-ui$/,
         replacement: resolve(projectRoot, 'dist/serenova-ui.js'),
       },

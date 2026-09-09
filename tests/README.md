@@ -37,7 +37,7 @@ tests/
 | `*.unit.spec.ts`        | Vitest + happy-dom + Vue Test Utils  | Props、默认值、Slots、Events、渲染结果、状态变化、边界条件、源码类型和公共导出       |
 | `*.integration.spec.ts` | Vitest Browser Mode + Chromium       | 原生表单、真实焦点与键盘、浏览器事件、Teleport、滚动、布局、尺寸、计算样式和组件协作 |
 | `*.e2e.spec.ts`         | Playwright + Chromium + 最小消费应用 | 当前 `dist` 的公共安装、样式加载和代表性关键用户流程                                 |
-| `contracts/package/`    | Node.js + TypeScript                 | ESM、CommonJS、CSS、声明、插件、导出映射、Vue external 和 npm 文件边界               |
+| `contracts/package/`    | Node.js + TypeScript                 | ESM、CommonJS、自动样式、声明、插件、导出映射、Vue external 和 npm 文件边界          |
 
 `vitest.config.ts` 使用 `unit` 与 `integration` 两个互斥 project；`playwright.config.ts` 只发现 E2E 用例并启动最小消费应用。测试 API 必须从对应运行器显式导入。
 

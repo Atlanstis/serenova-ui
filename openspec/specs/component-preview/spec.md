@@ -22,12 +22,17 @@ Storybook SHALL 仅作为开发过程中的源码预览工作台，通过包公�
 
 ### Requirement: Story 使用真实消费方式
 
-所有组件 Story MUST 从 `serenova-ui` 公共入口导入组件并从 `serenova-ui/style.css` 导入样式，且 SHALL 与发布构建隔离。
+所有组件 Story MUST 从 `serenova-ui` 公共入口导入组件且无需显式导入组件库 CSS，组件样式自动加载，且 SHALL 与发布构建隔离。
 
 #### Scenario: 新增组件 Story
 
 - **WHEN** 维护者为公共组件新增 Story
 - **THEN** Story 通过公共 API 使用组件，并且 Story 与 Storybook 配置不进入 npm 发布产物
+
+#### Scenario: 默认预览未预加载样式
+
+- **WHEN** 启动源码 Storybook 且未通过全局配置预加载组件库 CSS
+- **THEN** 组件外观正常，修改 SFC 样式继续触发热更新
 
 ### Requirement: 提供组件工作台能力
 

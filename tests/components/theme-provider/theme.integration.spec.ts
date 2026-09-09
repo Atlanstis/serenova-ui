@@ -1,10 +1,6 @@
-import { expect, test, vi } from 'vitest'
+import { expect, test } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-vue'
-import { createSSRApp, h } from 'vue'
-import { renderToString } from 'vue/server-renderer'
-import { SButton, SThemeProvider } from '@/index'
-import { customPreset } from '../../support/theme-preset'
 import Fixture from './fixtures/Theme.fixture.vue'
 
 test('主题继承、重置、移除覆盖和 Teleport 使用真实样式', async () => {
@@ -40,35 +36,4 @@ test('Provider 下鼠标和原生键盘激活复用相同点击路径', async ()
   await expect.element(screen.getByTestId('count')).toHaveTextContent('2')
   await userEvent.keyboard(' ')
   await expect.element(screen.getByTestId('count')).toHaveTextContent('3')
-})
-
-test('相同主题的 SSR 输出可无差异 hydration', async () => {
-  const Root = {
-    render: () =>
-      h(
-        SThemeProvider,
-        { preset: customPreset },
-        { default: () => h(SButton, { variant: 'primary' }, () => '服务端按钮') },
-      ),
-  }
-  const container = document.createElement('div')
-  container.innerHTML = await renderToString(createSSRApp(Root))
-  document.body.append(container)
-  const original = container.querySelector('button')!
-  const error = vi.spyOn(console, 'error')
-  const warn = vi.spyOn(console, 'warn')
-  const app = createSSRApp(Root)
-  try {
-    expect(getComputedStyle(original).backgroundColor).toBe('rgb(132, 173, 255)')
-    app.mount(container)
-    expect(container.querySelector('button')).toBe(original)
-    expect(getComputedStyle(original).backgroundColor).toBe('rgb(132, 173, 255)')
-    expect(error).not.toHaveBeenCalled()
-    expect(warn).not.toHaveBeenCalled()
-  } finally {
-    app.unmount()
-    container.remove()
-    error.mockRestore()
-    warn.mockRestore()
-  }
 })

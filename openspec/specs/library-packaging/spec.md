@@ -22,12 +22,12 @@
 
 ### Requirement: 发布模块、样式与类型产物
 
-组件库 MUST 生成与 `package.json` 导出映射一致的 ESM、CommonJS、CSS 和 TypeScript 声明产物，并 SHALL 提供稳定的 `serenova-ui/style.css` 样式子路径。
+组件库 MUST 生成与 `package.json` 导出映射一致的 ESM、CommonJS 和 TypeScript 声明产物；组件基础样式 MUST 随 JS 自动加载，MUST 不发布独立 CSS 文件或 CSS 公共子路径。
 
 #### Scenario: ESM 使用者加载组件库
 
-- **WHEN** ESM 项目导入 `serenova-ui` 和 `serenova-ui/style.css`
-- **THEN** 模块、组件样式和类型声明均可被构建工具正确解析
+- **WHEN** ESM 项目仅导入并在客户端使用 `serenova-ui`
+- **THEN** 模块和类型声明可被正确解析，组件样式自动加载，无需显式 CSS 导入
 
 #### Scenario: CommonJS 使用者加载组件库
 
@@ -54,7 +54,7 @@
 
 ### Requirement: 提供可执行的使用与发布文档
 
-README SHALL 说明安装、全量与按需使用、样式导入、本地开发、测试、构建、包内容检查和 npm 发布步骤；单个组件的 API 与交互说明 SHALL 由 Storybook Docs 提供。
+README SHALL 说明安装、全量与按需使用、自动样式加载、旧 CSS 入口删除的迁移步骤、仅客户端支持边界、本地开发、测试、构建、包内容检查和 npm 发布步骤；单个组件的 API 与交互说明 SHALL 由 Storybook Docs 提供。
 
 #### Scenario: 新使用者阅读 README
 
@@ -68,11 +68,11 @@ README SHALL 说明安装、全量与按需使用、样式导入、本地开发�
 
 ### Requirement: 支持组件与主题的独立公共子路径
 
-组件库 MUST 提供 `serenova-ui/button`、`serenova-ui/theme-provider`、`serenova-ui/icons` 的 ESM、CommonJS 与类型入口，以及 `serenova-ui/button/style.css`。MUST 提供 `serenova-ui/themes/light` 的预设及对应类型入口，MUST NOT 提供 `serenova-ui/themes/dark`。六个图标及 `IconProps` MUST 同时从包根和 icons 集合入口具名导出；MUST NOT 提供 `serenova-ui/icons/add` 等单图标子路径或通配导出。无视觉规则的主题提供者和内联图标 SHALL 不要求独立 CSS。包根组件、插件及 Provider 公共类型 MUST 保留，默认插件 SHALL 注册六个图标，每个图标 SHALL 支持单组件 app.use 安装。
+组件库 MUST 提供 `serenova-ui/button`、`serenova-ui/theme-provider`、`serenova-ui/icons` 的 ESM、CommonJS 与类型入口。MUST 提供 `serenova-ui/themes/light` 的预设及对应类型入口，MUST NOT 提供 `serenova-ui/themes/dark`。六个图标及 `IconProps` MUST 同时从包根和 icons 集合入口具名导出；MUST NOT 提供 `serenova-ui/icons/add` 等单图标子路径或通配导出。无视觉规则的主题提供者和内联图标 SHALL 不要求独立 CSS。包根组件、插件及 Provider 公共类型 MUST 保留，默认插件 SHALL 注册六个图标，每个图标 SHALL 支持单组件 app.use 安装。
 
 #### Scenario: 按需消费按钮
 
-- **WHEN** 消费应用导入 `serenova-ui/button` 和 `serenova-ui/button/style.css`
+- **WHEN** 消费应用仅导入 `serenova-ui/button` 并在客户端渲染按钮
 - **THEN** 应用可使用完整默认按钮及加载图标，无需导入全量 CSS 或主题提供者
 
 #### Scenario: 按需消费浅色预设
@@ -102,7 +102,7 @@ README SHALL 说明安装、全量与按需使用、样式导入、本地开发�
 
 ### Requirement: 样式发布遵循组件依赖边界
 
-每个组件样式入口 MUST 覆盖该组件的全部运行时状态和必要依赖，MUST 不包含无关组件规则、Storybook 样式或全局 reset。全量 CSS MUST 聚合相同来源的组件样式。所有普通 JS 入口 MUST 可在 Node 中直接加载且不隐式加载 CSS；CSS MUST 标记为副作用资源，以免显式导入被构建工具错误删除。
+每个组件的自动样式 MUST 覆盖该组件的全部运行时状态和必要依赖，MUST 不包含无关组件规则、Storybook 样式或全局 reset。组件在浏览器使用时 MUST 自动挂载对应基础样式。所有普通 JS 入口 MUST 可在 Node 中直接加载，模块求值阶段 MUST 不依赖 DOM 或 CSS loader；该模块加载契约 MUST 不被解释为支持服务端组件渲染。自动样式路径 MUST 不被构建工具错误删除。
 
 #### Scenario: 验证无关样式排除
 
@@ -119,16 +119,20 @@ README SHALL 说明安装、全量与按需使用、样式导入、本地开发�
 - **WHEN** Node 通过 ESM 或 CommonJS 加载包根、组件、提供者和预设入口
 - **THEN** 加载成功且不需要 CSS loader 或浏览器全局对象
 
-### Requirement: 全量样式保留入口并显式迁移全局主题
+### Requirement: 组件渲染仅支持浏览器客户端
 
-`serenova-ui/style.css` MUST 继续提供全量组件样式，但 MUST 不向 `:root` 注入全局主题、改变全页 color-scheme 或响应全局暗色属性。文档 MUST 说明默认 Button 迁移为 Figma primary、danger 改为 error、default 被移除以及内置暗色入口移除；需要自定义颜色的使用者 SHALL 通过保留的 `SThemeProvider` 和 tokens/preset 配置接入。
+组件库 MUST 明确仅支持客户端渲染，MUST 不提供 SSR、服务端首屏样式收集或 hydration 支持承诺，MUST 不新增 SSR 公共子路径。保留 Node 模块加载和 ESM/CommonJS 发布验证 SHALL 不构成服务端渲染支持。
 
-#### Scenario: 原有默认主题接入
+#### Scenario: 确认支持边界
 
-- **WHEN** 使用者沿用包根组件与全量 CSS 导入且未配置主题
-- **THEN** Button 使用新的 Figma 浅色 primary 外观，普通页面元素不被全局主题初始化影响
+- **WHEN** 使用者查阅接入文档和包导出
+- **THEN** 文档明确 SSR 不受支持，导出不包含 serenova-ui/ssr，组件可在客户端直接使用
 
-#### Scenario: 迁移暗色主题
+### Requirement: 移除独立 CSS 公共入口
 
-- **WHEN** 使用者按迁移文档删除 darkPreset 导入
-- **THEN** 可以使用默认浅色主题或自行配置 Provider 颜色，不再依赖内置暗色预设
+组件库 MUST 移除 serenova-ui/style.css 和 serenova-ui/button/style.css，不提供兼容别名；MUST 移除 package.json 的 style 字段。文档 MUST 指导使用者删除旧 CSS 导入，组件使用时自动提供相同默认主题外观。
+
+#### Scenario: 解析旧 CSS 子路径
+
+- **WHEN** 消费端尝试解析任一旧 CSS 子路径
+- **THEN** 包导出映射拒绝该路径，消费端须删除导入后使用组件

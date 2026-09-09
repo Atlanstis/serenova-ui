@@ -1,6 +1,6 @@
 # 样式与主题规范
 
-公共组件使用局部 CSS 与实例级 CSS 变量。组件无需 Provider 即可使用 Figma 浅色默认值；全量和按需 CSS 不注入全局 :root token、不修改页面 color-scheme 或业务元素样式。
+公共组件使用局部 CSS 与实例级 CSS 变量，使用时自动挂载所需规则，无需显式 CSS 导入。同一文档复用相同规则，卸载后保留供后续实例使用。组件无需 Provider 即可使用 Figma 浅色默认值；自动样式不注入全局 :root token、不修改页面 color-scheme 或业务元素样式。
 
 ## 解析与边界
 
@@ -9,7 +9,7 @@
 3. Button 从共享值派生组件 token，再应用 components.Button 覆盖。
 4. 显式 preset 或 inherit=false 清除父级覆盖；移除字段恢复基础值。
 
-SThemeProvider 无 DOM 包装、无焦点和业务事件；主题按 Vue 上下文继承，Teleport 保持来源主题。独立应用不共享主题，服务端不同请求隔离，相同输入 SSR/hydration 一致。预设为纯数据，不引用组件实现或 CSS。
+SThemeProvider 无 DOM 包装、无焦点和业务事件；主题按 Vue 上下文继承，Teleport 保持来源主题。独立应用不共享主题，仅支持浏览器客户端渲染，不支持 SSR 或 hydration；后续组件无需设计服务端渲染适配。预设为纯数据，不引用组件实现或 CSS。
 
 ## 默认值与 Figma 映射
 
@@ -55,7 +55,6 @@ import { SButton } from 'serenova-ui/button'
 import { SThemeProvider } from 'serenova-ui/theme-provider'
 import { SIconAdd } from 'serenova-ui/icons'
 import { lightPreset } from 'serenova-ui/themes/light'
-import 'serenova-ui/button/style.css'
 </script>
 <template>
   <SThemeProvider :preset="lightPreset" :tokens="{ common: { colorPrimary: '#21885c' } }">
@@ -86,7 +85,7 @@ import 'serenova-ui/button/style.css'
 
 ## 验证
 
-unit 验证公共输入输出、类型与导出；integration 验证真实样式、焦点、事件和主题协作；E2E 消费 dist 的全量/按需入口；package 检查 ESM/CJS/声明/CSS、导出边界、tree shaking 与 npm 文件。Storybook 仅承担预览和 Docs，不替代测试。
+unit 验证公共输入输出、类型与导出；integration 验证真实样式、焦点、事件和主题协作；E2E 消费 dist 的全量/按需入口；package 检查 ESM/CJS/声明/自动样式、导出边界、tree shaking 与 npm 文件。Storybook 仅承担预览和 Docs，不替代测试。
 
 ## 文字外观 API 迁移
 
@@ -103,3 +102,9 @@ unit 验证公共输入输出、类型与导出；integration 验证真实样式
 ### 原生按钮类型迁移
 
 `nativeType`、`ButtonNativeType` 和 `buttonNativeTypes` 已从公共 API 删除。将 `native-type="submit"` / `native-type="reset"` 改为 `type="submit"` / `type="reset"`，删除旧类型和常量导入。`type` 使用单根按钮的原生属性透传，不属于 ButtonProps；未传入时默认 button，移除透传属性后恢复 button。旧 nativeType 不再控制表单行为，不提供兼容别名。
+
+## 自动样式迁移
+
+删除 `serenova-ui/style.css` 与 `serenova-ui/button/style.css` 导入，这两个入口及独立 CSS 产物已移除。只需导入并使用组件，无 Provider 时使用内置浅色主题。SSR 与 hydration 不受支持；服务端应用须在客户端渲染边界内使用组件。
+
+开发实现：公共组件继续编写 scoped SFC 样式，`build/auto-component-styles.ts` 将 Vue 编译后的 CSS 作为内联模块关联到组件，在挂载前注入文档。不要在源码出口或消费 Fixture 中手动导入组件库 CSS。开发热更新替换相同组件规则；发布规则按标识及内容去重。

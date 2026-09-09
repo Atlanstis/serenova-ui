@@ -1,2 +1,1 @@
-import './shared.css'
-export { SButton } from '../../../../../src/components/button'
+export { default as SButton } from './Selected.vue'
