@@ -18,8 +18,9 @@ const resets = shallowRef(0)
     <Button data-testid="medium-target" size="medium">中型按钮</Button>
     <Button data-testid="large-target" size="large">大型按钮</Button>
 
-    <div data-testid="block-container" style="width: 320px">
-      <Button data-testid="block-target" block>块级按钮</Button>
+    <div data-testid="width-container" style="width: 320px">
+      <Button data-testid="width-target" style="width: 100%">自定义宽度</Button>
+      <Button data-testid="legacy-width-target" v-bind="{ block: true }">继续</Button>
     </div>
 
     <form @submit.prevent="submits += 1" @reset="resets += 1">

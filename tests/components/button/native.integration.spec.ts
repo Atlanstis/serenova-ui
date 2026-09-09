@@ -34,13 +34,15 @@ test('保留 submit 和 reset 的原生表单行为', async () => {
   await expect.element(screen.getByTestId('reset-count')).toHaveTextContent('1')
 })
 
-test('块级按钮采用容器可用宽度', async () => {
+test('消费端宽度样式生效，旧 block 属性不再提供满宽布局', async () => {
   const screen = await render(ButtonIntegrationFixture)
-  const container = screen.getByTestId('block-container').element()
-  const button = screen.getByTestId('block-target').element()
+  const container = screen.getByTestId('width-container').element()
+  const button = screen.getByTestId('width-target').element()
 
-  expect(getComputedStyle(button).display).toBe('flex')
   expect(button.getBoundingClientRect().width).toBe(container.getBoundingClientRect().width)
+  expect(
+    screen.getByTestId('legacy-width-target').element().getBoundingClientRect().width,
+  ).toBeLessThan(container.getBoundingClientRect().width)
 })
 
 test('解析公共变体与尺寸的计算样式', async () => {

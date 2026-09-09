@@ -1,22 +1,19 @@
 /* 仅用于 Button Stories，不进入组件库产物。 */
 .button-story {
   display: grid;
-  width: min(860px, 100%);
+  width: min(1080px, 100%);
+  min-width: 0;
   gap: 28px;
   color: var(--preview-color-text);
 }
-
 .button-story section {
   display: grid;
   gap: 12px;
 }
-
 .button-story h2 {
   margin: 0;
-  color: var(--preview-color-text);
   font-size: 15px;
 }
-
 .button-story p,
 .button-story output {
   margin: 0;
@@ -24,46 +21,37 @@
   font-size: 13px;
   line-height: 1.6;
 }
-
 .button-story__row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 24px;
+}
+.button-story__sample {
+  display: grid;
+  justify-items: start;
   gap: 12px;
 }
-
-.button-story__stack {
-  display: grid;
-  width: min(520px, 100%);
-  gap: 12px;
+.button-story__scroll {
+  overflow-x: auto;
+  padding: 8px;
 }
-
-.button-story__form {
-  display: grid;
-  width: min(420px, 100%);
-  gap: 14px;
-}
-
-.button-story__form label {
-  display: grid;
-  gap: 6px;
-  color: var(--preview-color-text);
+.button-story__matrix {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
   font-size: 13px;
-  font-weight: 600;
 }
-
-.button-story__form input {
-  min-height: 38px;
-  border: 1px solid var(--preview-color-border-strong);
-  border-radius: var(--preview-radius-medium);
-  padding: 0 12px;
-  background: var(--preview-color-surface-raised);
-  color: var(--preview-color-text);
-  font: inherit;
+.button-story__matrix th,
+.button-story__matrix td {
+  padding: 12px 16px;
+  text-align: start;
+  white-space: nowrap;
 }
-
-.button-story__icon {
-  width: 1em;
-  height: 1em;
-  fill: currentColor;
+.button-story__matrix th {
+  font-weight: 500;
+}
+.button-story__matrix thead,
+.button-story__matrix td > span {
+  color: var(--preview-color-text-muted);
 }

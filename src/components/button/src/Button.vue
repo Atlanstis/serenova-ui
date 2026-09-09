@@ -8,7 +8,6 @@ defineOptions({ name: 'SButton' })
 const props = withDefaults(defineProps<ButtonProps>(), {
   variant: 'primary',
   size: 'medium',
-  block: false,
   disabled: false,
   loading: false,
   nativeType: 'button',
@@ -21,7 +20,6 @@ defineSlots<ButtonSlots>()
 const isDisabled = computed(() => props.disabled || props.loading)
 const isText = computed(() => props.variant === 'text')
 const isGhost = computed(() => props.ghost && !isText.value)
-const isBlock = computed(() => props.block && !props.iconOnly)
 const canWave = computed(() => !isDisabled.value && !isText.value)
 const wave = ref(0)
 let sequence = 0
@@ -52,7 +50,6 @@ function handleClick(event: MouseEvent) {
       `s-button--${variant}`,
       `s-button--${size}`,
       {
-        's-button--block': isBlock,
         's-button--loading': loading,
         's-button--ghost': isGhost,
         's-button--icon-only': iconOnly,
@@ -119,10 +116,6 @@ function handleClick(event: MouseEvent) {
 .s-button:disabled {
   cursor: not-allowed;
   opacity: var(--s-button-disabled-opacity);
-}
-.s-button--block {
-  display: flex;
-  width: 100%;
 }
 .s-button--icon-only {
   width: var(--s-button-height);

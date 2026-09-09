@@ -81,3 +81,32 @@ const oldDefault: ButtonVariant = 'default'
 // @ts-expect-error danger 改为 error。
 const oldDanger: ButtonVariant = 'danger'
 void [iconProps, iconPlugins, oldDefault, oldDanger]
+
+// 公开字段删除同时约束根入口和单组件入口。
+import type { ButtonProps as IndividualButtonProps } from 'serenova-ui/button'
+import type { ButtonThemeTokens as RootButtonThemeTokens } from 'serenova-ui'
+// @ts-expect-error block 已移除，满宽使用消费端 class/style。
+const removedBlock: ButtonProps = { block: true }
+// @ts-expect-error 单组件入口也不提供 block。
+const removedIndividualBlock: IndividualButtonProps = { block: true }
+// @ts-expect-error 文字按钮不使用 Ghost 配色。
+const removedGhostText: Partial<ButtonThemeTokens> = { ghostColorText: '#123456' }
+// @ts-expect-error 根入口也不提供该无效字段。
+const removedRootGhostText: Partial<RootButtonThemeTokens> = { ghostColorText: '#123456' }
+const retainedButtonProps: IndividualButtonProps = {
+  nativeType: 'submit',
+  ghost: true,
+  iconOnly: true,
+}
+const retainedColors: Partial<RootButtonThemeTokens> = {
+  textColorText: '#123456',
+  ghostColorPrimary: '#654321',
+}
+void [
+  removedBlock,
+  removedIndividualBlock,
+  removedGhostText,
+  removedRootGhostText,
+  retainedButtonProps,
+  retainedColors,
+]

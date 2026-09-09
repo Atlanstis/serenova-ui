@@ -2,6 +2,24 @@ import { expect, test } from 'vitest'
 import { userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-vue'
 import Fixture from './fixtures/ButtonStates.fixture.vue'
+import ThemeFixture from './fixtures/ButtonTheme.fixture.vue'
+
+test('文字和四种语义 Ghost 主题覆盖继续影响实际外观', async () => {
+  const screen = await render(ThemeFixture)
+  const colors = {
+    text: 'rgb(18, 52, 86)',
+    primary: 'rgb(35, 69, 103)',
+    warning: 'rgb(52, 86, 120)',
+    success: 'rgb(69, 103, 137)',
+    error: 'rgb(86, 120, 154)',
+  }
+  for (const [name, color] of Object.entries(colors)) {
+    const style = getComputedStyle(screen.getByRole('button', { name, exact: true }).element())
+    expect(style.color).toBe(color)
+    expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(style.borderColor).toBe(name === 'text' ? 'rgba(0, 0, 0, 0)' : color)
+  }
+})
 
 test('Figma 状态颜色、Ghost 与纯图标尺寸', async () => {
   const screen = await render(Fixture)

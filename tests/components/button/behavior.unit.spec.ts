@@ -21,7 +21,6 @@ describe('SButton', () => {
   it.each([
     ['variant', 'primary', 's-button--primary'],
     ['size', 'large', 's-button--large'],
-    ['block', true, 's-button--block'],
   ] as const)('把 %s 映射到公共 class', (prop, value, className) => {
     const wrapper = mount(Button, {
       props: { [prop]: value },
@@ -136,11 +135,10 @@ it('前后图标、加载替换和纯图标组合保持内容契约', async () =
   expect(wrapper.find('[data-testid="suffix"]').exists()).toBe(false)
   expect(wrapper.findAll('svg')).toHaveLength(1)
   expect(wrapper.text()).toBe('保存')
-  await wrapper.setProps({ loading: false, disabled: false, iconOnly: true, block: true })
+  await wrapper.setProps({ loading: false, disabled: false, iconOnly: true })
   expect(wrapper.find('[data-testid="prefix"]').exists()).toBe(true)
   expect(wrapper.find('[data-testid="suffix"]').exists()).toBe(false)
   expect(wrapper.text()).toBe('')
-  expect(wrapper.classes()).not.toContain('s-button--block')
   await wrapper.setProps({ iconOnly: false, variant: 'text', ghost: true })
   expect(wrapper.classes()).not.toContain('s-button--ghost')
 })

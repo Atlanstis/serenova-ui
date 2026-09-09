@@ -33,13 +33,13 @@ SThemeProvider 无 DOM 包装、无焦点和业务事件；主题按 Vue 上下�
 | 波纹                   | Button.waveDuration / waveSpread                                                        | 600 ms / 5 px                                  |
 | 加载旋转               | durationSpin                                                                            | 800 ms                                         |
 
-完整共享类型见 src/theme/types.ts；完整组件字段及白名单见 src/components/button/theme/types.ts。组件颜色组包含 background、backgroundHover、backgroundPressed、backgroundDisabled、borderColor、textColor、focusColor、ghostColor，按 Primary/Warning/Success/Error/Text 后缀区分。无后缀颜色字段表示 primary 基础覆盖，显式 Primary 后缀覆盖优先。
+完整共享类型见 src/theme/types.ts；完整组件字段及白名单见 src/components/button/theme/types.ts。组件颜色组包含 background、backgroundHover、backgroundPressed、backgroundDisabled、borderColor、textColor、focusColor、ghostColor，按 Primary/Warning/Success/Error/Text 后缀区分，其中 ghostColor 仅支持四种语义后缀，不提供 ghostColorText。无后缀颜色字段表示 primary 基础覆盖，显式 Primary 后缀覆盖优先。
 
 所有 token 均为字符串。CSS 变量映射位于 use-button-theme.ts：当前变体解析后输出 `--s-button-background` 等实例变量；消费端可通过原生 style 覆盖。新增 token 必须同步公共类型、白名单、默认派生、变量映射和契约测试。
 
 ## Button 状态与图标
 
-variant 仅支持 primary/warning/success/error/text，默认 primary。ghost 对四种语义类型生效；text 忽略 ghost。iconOnly 固定为相应高度的正方形，优先于 block，仅显示 icon 槽。
+variant 仅支持 primary/warning/success/error/text，默认 primary。ghost 对四种语义类型生效；text 忽略 ghost。iconOnly 固定为相应高度的正方形，仅显示 icon 槽。
 
 普通按钮支持 icon/default/suffixIcon。图标缺省不占位，loading 隐藏前后业务图标、保留原文字，使用真实 Loading 图形。禁用及加载使用独立配色，实心保持白字，Ghost 保持透明底和对应禁用色。Loading 由 Button 旋转，独立 SIconLoading 保持静态。
 
@@ -75,6 +75,14 @@ import 'serenova-ui/button/style.css'
 - 内置 darkPreset 与 themes/dark 入口已移除。使用默认浅色或自行定义 Provider 覆盖；保留自定义预设和局部隔离能力。
 - 原先以整体透明度表示禁用的默认值改为 1，禁用状态采用专用背景色。
 - 图标前槽保留，后槽为 suffixIcon；图标样式和业务文字由调用方提供，loading 不改写文案。
+
+## Button 精简迁移与预览
+
+- `block` 已从 ButtonProps 移除，普通满宽按钮改为 `<SButton style="width: 100%">继续</SButton>`，也可透传消费端 class。旧 JavaScript 调用传入 block 不再提供满宽布局，不新增运行时异常或兼容别名。
+- 删除无效的 `ghostColorText` 配置即可；如需调整文字按钮正常颜色，显式设置 `textColorText`。四种语义 Ghost 配色字段继续有效，`disabledOpacity` 保留。
+- Button Storybook 展示为基础用法、类型与外观、尺寸、禁用与加载、图标用法、交互反馈六项。Playground 与 Interaction 入口保持；Variants 改为 Appearance，SizesAndStates 拆为 Sizes 和 DisabledAndLoading，Slots 与 GhostAndIcons 合并为 Icons，Form 删除，旧链接需要更新。
+- `nativeType` 仍支持 button、submit、reset；Form 的删除仅影响展示，原生表单能力及自动化测试继续保留。
+- 图标位置与文案 Controls 仅供展示，不属于 ButtonProps。纯图标模式提供默认图标；固定矩阵不显示无效 Controls。Tab、Enter、Space 和点击使用真实按钮交互。
 
 ## 验证
 

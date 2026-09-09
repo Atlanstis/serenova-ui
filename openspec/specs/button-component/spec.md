@@ -8,7 +8,7 @@
 
 ### Requirement: 提供稳定的 Button 外观 API
 
-`SButton` SHALL 支持 `variant`、`size`、`block`、`disabled`、`loading`、`nativeType`、`ghost` 和 `iconOnly`。`variant` MUST 仅支持 `primary / warning / success / error / text`，默认 `primary`，不保留 `default` 或 `danger` 别名；默认尺寸 SHALL 为 `medium`、原生类型 SHALL 为 `button`，所有布尔 Props SHALL 默认为 `false`。`ghost` SHALL 对四种语义类型提供透明底描边外观，在 `text` 下不改变文字按钮外观。`iconOnly` SHALL 优先保持正方形，即使 `block=true`。
+`SButton` SHALL 支持 `variant`、`size`、`disabled`、`loading`、`nativeType`、`ghost` 和 `iconOnly`。`variant` MUST 仅支持 `primary / warning / success / error / text`，默认 `primary`，不保留 `default` 或 `danger` 别名；默认尺寸 SHALL 为 `medium`、原生类型 SHALL 为 `button`，所有布尔 Props SHALL 默认为 `false`。`ghost` SHALL 对四种语义类型提供透明底描边外观，在 `text` 下不改变文字按钮外观。`iconOnly` SHALL 在默认布局下保持所选尺寸的正方形。`block` MUST 不再属于公共 Props，组件 SHALL 不再提供内置满宽模式；消费端可通过 class/style 设置普通按钮宽度。
 
 #### Scenario: 使用默认配置渲染
 
@@ -17,8 +17,8 @@
 
 #### Scenario: 渲染块级按钮
 
-- **WHEN** `block=true` 且 `iconOnly=false`
-- **THEN** 按钮占用其容器可用行宽
+- **WHEN** 消费端检查 ButtonProps 并通过 style 为普通按钮设置宽度
+- **THEN** ButtonProps 不包含 block，按钮保留宽度样式透传能力，不提供 block 兼容别名
 
 #### Scenario: 组合外观属性
 
@@ -51,7 +51,7 @@
 
 #### Scenario: 渲染纯图标按钮
 
-- **WHEN** `iconOnly=true`，提供前置图标，并设置任意尺寸或 `block=true`
+- **WHEN** `iconOnly=true`，提供前置图标，并设置任意支持的尺寸
 - **THEN** 仅显示前置图标，按钮宽高均为所选尺寸的 28、34 或 40 px
 
 ### Requirement: 提供可预测的点击行为

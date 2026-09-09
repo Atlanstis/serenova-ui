@@ -23,6 +23,7 @@ describe('Button 公共类型', () => {
     >()
     expectTypeOf<ButtonSize>().toEqualTypeOf<'small' | 'medium' | 'large'>()
     expectTypeOf<ButtonNativeType>().toEqualTypeOf<'button' | 'submit' | 'reset'>()
+    expectTypeOf<ButtonProps>().not.toHaveProperty('block')
     expectTypeOf<ButtonProps>().toHaveProperty('loading').toEqualTypeOf<boolean | undefined>()
     expectTypeOf<ButtonSlots>().toHaveProperty('icon')
     expectTypeOf<ButtonEmits>().toHaveProperty('click')

@@ -8,6 +8,12 @@
 - 当需要引用命令、路径、代码标识符、错误信息或第三方 API 名称时，可以保留英文原文，并用中文解释其含义或处理方式。
 - 除非用户明确说明，否则不要直接调用浏览器验证页面效果。
 
+## Figma 设计参考
+
+- 当前交互使用的 Figma 文件：[serenova-ui](https://www.figma.com/design/RXjt6R6Hhaz4NJP8fYw533/serenova-ui)。
+- Button 组件：`node-id` 为 `3-60`，[打开组件节点](https://www.figma.com/design/RXjt6R6Hhaz4NJP8fYw533/serenova-ui?node-id=3-60)。
+- Icon 页面：`node-id` 为 `12-10`，[打开页面节点](https://www.figma.com/design/RXjt6R6Hhaz4NJP8fYw533/serenova-ui?node-id=12-10)。
+
 ## 公共组件轻量化无障碍规范
 
 - 本规范仅适用于公共组件，不约束测试 Fixture、Storybook 辅助组件等内部实现。

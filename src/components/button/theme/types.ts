@@ -73,7 +73,6 @@ export interface ButtonThemeTokens {
   borderColorText: string
   textColorText: string
   focusColorText: string
-  ghostColorText: string
 }
 
 export const buttonThemeKeys = [
@@ -151,5 +150,4 @@ export const buttonThemeKeys = [
   'borderColorText',
   'textColorText',
   'focusColorText',
-  'ghostColorText',
 ] as const satisfies readonly (keyof ButtonThemeTokens)[]

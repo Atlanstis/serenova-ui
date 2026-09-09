@@ -13,7 +13,6 @@ export interface ButtonProps {
   size?: ButtonSize
   ghost?: boolean
   iconOnly?: boolean
-  block?: boolean
   disabled?: boolean
   loading?: boolean
   nativeType?: ButtonNativeType

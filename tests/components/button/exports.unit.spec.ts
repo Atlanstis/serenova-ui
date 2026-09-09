@@ -1,5 +1,5 @@
 import { createApp, defineComponent, h } from 'vue'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 
 import SerenovaUI, { SButton } from '@/index'
 import * as SerenovaExports from '@/index'
@@ -28,4 +28,18 @@ describe('组件公共入口', () => {
   it('不从包根入口暴露内部组件注册表', () => {
     expect(SerenovaExports).not.toHaveProperty('components')
   })
+})
+
+it('根与单组件入口公开收敛后的类型', () => {
+  expectTypeOf<import('@/index').ButtonProps>().toEqualTypeOf<
+    import('@/components/button').ButtonProps
+  >()
+  expectTypeOf<import('@/components/button').ButtonProps>().not.toHaveProperty('block')
+  expectTypeOf<import('@/index').ButtonThemeTokens>().not.toHaveProperty('ghostColorText')
+  expectTypeOf<import('@/index').ButtonThemeTokens>().toEqualTypeOf<
+    import('@/components/theme-provider').ButtonThemeTokens
+  >()
+  expectTypeOf<import('@/components/button').ButtonNativeType>().toEqualTypeOf<
+    'button' | 'submit' | 'reset'
+  >()
 })

@@ -26,7 +26,6 @@ const count = ref(0)
     :data-testid="size + '-icon'"
     :size="size"
     icon-only
-    block
   >
     <template #icon><SIconAdd /></template>
   </SButton>

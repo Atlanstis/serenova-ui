@@ -100,8 +100,11 @@ export function useButtonTheme(props: Readonly<ButtonProps>) {
       minWidthLarge: '96px',
     } as ButtonThemeTokens
     for (const [variant, values] of Object.entries(variants)) {
-      for (const [key, value] of Object.entries(values))
+      for (const [key, value] of Object.entries(values)) {
+        // 文字按钮不使用 Ghost 配色，不生成无效的公开覆盖字段。
+        if (variant === 'Text' && key === 'ghostColor') continue
         defaults[`${key}${variant}` as keyof ButtonThemeTokens] = value
+      }
     }
     // 无后缀字段代表 primary 基础覆盖；显式 Primary 字段优先。
     const overrides = theme.components?.Button
