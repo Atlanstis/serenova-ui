@@ -1,11 +1,14 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["src/**/*.stories.*", "src/**/*.spec.*", "src/**/*.test.*"],
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
     },
-    "types": ["vite/client"]
-  }
+    {
+      "path": "./tsconfig.storybook.json"
+    },
+    {
+      "path": "./tests/tsconfig.json"
+    }
+  ]
 }

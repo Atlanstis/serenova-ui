@@ -1,4 +1,5 @@
 import { autoComponentStyles } from '../build/auto-component-styles.ts'
+import { publicComponentDocgen } from './public-component-docgen'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -31,7 +32,11 @@ const config: StorybookConfig = {
     disableTelemetry: true,
   },
   async viteFinal(viteConfig) {
-    viteConfig.plugins = [...(viteConfig.plugins ?? []), autoComponentStyles()]
+    viteConfig.plugins = [
+      ...(viteConfig.plugins ?? []),
+      publicComponentDocgen(),
+      autoComponentStyles(),
+    ]
     viteConfig.resolve = {
       ...viteConfig.resolve,
       alias: [

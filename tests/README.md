@@ -28,7 +28,7 @@ tests/
 | `contracts/`  | 独立验证发布产物、导出协议和外部消费边界                           |
 | `support/`    | 保存跨领域复用的 setup 与 helper                                   |
 
-`tests/tsconfig.json` 是唯一的测试 TypeScript 项目，继承根 `tsconfig.json` 的编译基线，并覆盖测试文件、Vue Fixture、Vite、Vitest 和 Playwright 配置。E2E 消费应用的 TypeScript 解析保持公共包名，运行时则由专用 Vite 配置精确映射到当前 `dist`。
+`tests/tsconfig.json` 是唯一的测试 TypeScript 项目，继承根 `tsconfig.base.json` 的编译基线，并由根 `tsconfig.json` 项目引用统一发现，覆盖测试文件、Vue Fixture、Vite、Vitest 和 Playwright 配置。E2E 消费应用的 TypeScript 解析保持公共包名，运行时则由专用 Vite 配置精确映射到当前 `dist`。
 
 ## 测试分层
 

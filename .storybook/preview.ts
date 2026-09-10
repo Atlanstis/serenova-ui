@@ -67,6 +67,10 @@ const preview: Preview = {
     },
     docs: {
       codePanel: true,
+      stories: {
+        // Docs 主示例已经在顶部展示，列表仅保留独立用法。
+        filter: (story: { tags: string[] }) => !story.tags.includes('docs-primary'),
+      },
     },
     layout: 'padded',
     options: {

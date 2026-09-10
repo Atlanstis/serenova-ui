@@ -1,8 +1,9 @@
 {
-  "extends": ["./tsconfig.json", "@vue/tsconfig/tsconfig.lib.json"],
-  "exclude": ["src/**/*.stories.*", "src/**/*.spec.*", "src/**/*.test.*"],
+  "extends": ["./tsconfig.base.json", "@vue/tsconfig/tsconfig.lib.json"],
+  "exclude": ["src/**/stories/**", "src/**/*.stories.*", "src/**/*.spec.*", "src/**/*.test.*"],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist"
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

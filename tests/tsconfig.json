@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "include": [
     "../src/**/*.ts",
     "../src/**/*.tsx",
@@ -11,6 +11,7 @@
     "../playwright.config.ts"
   ],
   "exclude": [
+    "../src/**/stories/**",
     "../src/**/*.stories.*",
     "../src/**/*.spec.*",
     "../src/**/*.test.*",

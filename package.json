@@ -56,7 +56,7 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "type-check": "pnpm type-check:lib && pnpm type-check:storybook && pnpm type-check:test",
-    "type-check:lib": "vue-tsc --noEmit -p tsconfig.json",
+    "type-check:lib": "vue-tsc --noEmit -p tsconfig.lib.json",
     "type-check:storybook": "vue-tsc --noEmit -p tsconfig.storybook.json",
     "type-check:test": "vue-tsc --noEmit -p tests/tsconfig.json",
     "test": "pnpm test:unit",
