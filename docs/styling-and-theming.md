@@ -65,7 +65,7 @@ import { lightPreset } from 'serenova-ui/themes/light'
 </template>
 ```
 
-图标同时从包根导出，支持默认插件注册及独立 app.use；独立图标无需 CSS。icons 集合是唯一图标子路径，不提供逐图标子路径。ESM 具名消费支持 tree shaking，CommonJS 保证正常加载。Button 仅依赖 Loading 图标。
+图标同时从包根导出，支持默认插件注册及独立 app.use；独立图标无需 CSS。icons 集合是唯一图标子路径，不提供逐图标子路径。ESM 具名消费支持 tree shaking，仅发布 ESM 产物。Button 仅依赖 Loading 图标。
 
 ## 迁移
 
@@ -85,7 +85,7 @@ import { lightPreset } from 'serenova-ui/themes/light'
 
 ## 验证
 
-unit 验证公共输入输出、类型与导出；integration 验证真实样式、焦点、事件和主题协作；E2E 消费 dist 的全量/按需入口；package 检查 ESM/CJS/声明/自动样式、导出边界、tree shaking 与 npm 文件。Storybook 仅承担预览和 Docs，不替代测试。
+unit 验证公共输入输出、类型与导出；integration 验证真实样式、焦点、事件和主题协作；E2E 消费 dist 的全量/按需入口；package 检查 ESM/声明/自动样式、导出边界、tree shaking 与 npm 文件。Storybook 仅承担预览和 Docs，不替代测试。
 
 ## 文字外观 API 迁移
 

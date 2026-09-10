@@ -41,23 +41,35 @@ const rootExport = packageJson.exports?.['.']
 assert(rootExport, '缺少包根导出映射。')
 
 const esmPath = packageTarget(rootExport.import)
-const cjsPath = packageTarget(rootExport.require)
 const typePath = packageTarget(rootExport.types)
 
 await Promise.all([
   assertNonEmptyFile(esmPath, 'ESM 产物'),
-  assertNonEmptyFile(cjsPath, 'CommonJS 产物'),
   assertNonEmptyFile(typePath, 'TypeScript 声明入口'),
 ])
 
 const require = createRequire(import.meta.url)
 const resolvedEsmPath = fileURLToPath(import.meta.resolve(packageName))
-const resolvedCjsPath = require.resolve(packageName)
 
 assert.equal(resolvedEsmPath, esmPath, '包根 ESM 导出没有解析到约定产物。')
-assert.equal(resolvedCjsPath, cjsPath, '包根 CommonJS 导出没有解析到约定产物。')
+assert.equal(packageJson.type, 'module')
+assert.equal(packageJson.main, rootExport.import)
+assert.equal(packageJson.module, rootExport.import)
+assert.equal(packageJson.exports['./package.json'], './package.json')
+const publicEntries = ['.', './button', './theme-provider', './themes/light', './icons']
+for (const entry of publicEntries) {
+  const mapping = packageJson.exports[entry]
+  assert.deepEqual(
+    Object.keys(mapping),
+    ['types', 'import'],
+    `${entry} 必须仅提供类型和 ESM 入口。`,
+  )
+  await assertNonEmptyFile(packageTarget(mapping.import), `${entry} ESM 产物`)
+  await assertNonEmptyFile(packageTarget(mapping.types), `${entry} 类型声明`)
+}
 
 const esmFiles = await readdir(resolve(repositoryRoot, 'dist'), { recursive: true })
+assert(!esmFiles.some((name) => name.endsWith('.cjs')), '构建产物不得包含 CommonJS 文件。')
 const esmSource = (
   await Promise.all(
     esmFiles
@@ -91,6 +103,8 @@ assert(
   ),
   'npm 包包含约定范围以外的文件。',
 )
+
+assert(!packedFiles.some(({ path }) => path.endsWith('.cjs')), 'npm 包不得包含 CommonJS 文件。')
 
 assert.equal(packageJson.style, undefined)
 assert.equal(packageJson.sideEffects, false)
@@ -193,30 +207,45 @@ try {
         app.use(SerenovaUI)
         assert.equal(app.component('SButton'), SButton)
         assert.equal(app.component('SThemeProvider'), library.SThemeProvider)
+
+        const iconNames = [
+          'SIconAdd',
+          'SIconDelete',
+          'SIconEdit',
+          'SIconSearch',
+          'SIconArrowRight',
+          'SIconLoading',
+        ]
+        const rootLibrary = library
+        const iconLibrary = await import(${packageSpecifier} + '/icons')
+        assert.deepEqual(Object.keys(iconLibrary).sort(), [...iconNames].sort())
+        for (const name of iconNames) {
+          assert.equal(iconLibrary[name], rootLibrary[name])
+          assert.equal(typeof iconLibrary[name].install, 'function')
+        }
+        for (const subpath of ['themes/dark', 'icons/add', 'style.css', 'button/style.css', 'ssr']) {
+          assert.throws(() => import.meta.resolve(${packageSpecifier} + '/' + subpath), {
+            code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+          })
+        }
       `,
     ],
     { cwd: temporaryRoot, stdio: 'inherit' },
   )
 
+  // 确认已撤销的包名 require 入口；不承诺绝对路径 require(ESM) 的行为。
   execFileSync(
     process.execPath,
     [
+      '--input-type=commonjs',
       '--eval',
       `
         const assert = require('node:assert/strict')
-        const library = require(${packageSpecifier})
-
-        assert.equal(typeof library.default.install, 'function')
-        assert.equal(typeof library.SButton.install, 'function')
-        assert.equal('components' in library, false)
-        assert.equal('buttonNativeTypes' in library, false)
-        assert.equal('buttonNativeTypes' in require(${packageSpecifier} + '/button'), false)
-        assert.deepEqual(library.buttonSizes, ['small', 'medium', 'large'])
-        for (const sub of ['button', 'theme-provider', 'themes/light', 'icons']) {
-          assert.ok(Object.keys(require(${packageSpecifier} + '/' + sub)).length > 0)
+        for (const sub of ['', '/button', '/theme-provider', '/themes/light', '/icons']) {
+          assert.throws(() => require(${packageSpecifier} + sub), {
+            code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+          })
         }
-        assert.equal(require(${packageSpecifier} + '/theme-provider').SThemeProvider, library.SThemeProvider)
-
       `,
     ],
     { cwd: temporaryRoot, stdio: 'inherit' },
@@ -237,27 +266,6 @@ try {
     }
   }
 
-  const iconNames = [
-    'SIconAdd',
-    'SIconDelete',
-    'SIconEdit',
-    'SIconSearch',
-    'SIconArrowRight',
-    'SIconLoading',
-  ]
-  const installedRequire = createRequire(resolve(temporaryRoot, 'consumer.cjs'))
-  const rootLibrary = installedRequire(packageName)
-  const iconLibrary = installedRequire(`${packageName}/icons`)
-  assert.deepEqual(Object.keys(iconLibrary).sort(), [...iconNames].sort())
-  for (const name of iconNames) {
-    assert.equal(iconLibrary[name], rootLibrary[name])
-    assert.equal(typeof iconLibrary[name].install, 'function')
-  }
-  for (const subpath of ['themes/dark', 'icons/add', 'style.css', 'button/style.css', 'ssr']) {
-    assert.throws(() => installedRequire.resolve(`${packageName}/${subpath}`), {
-      code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
-    })
-  }
   assert.equal(packageJson.exports['./icons/*'], undefined)
   for (const [entry, symbol] of [
     [packageName, 'SIconAdd'],
@@ -318,7 +326,7 @@ try {
 }
 
 console.log(
-  'dist 包级冒烟检查通过：包名解析、ESM、CommonJS、插件、SButton、自动样式、声明和 Vue external 均可消费。',
+  'dist 包级冒烟检查通过：包名解析、仅 ESM、插件、SButton、自动样式、声明和 Vue external 均可消费。',
 )
 
 // 通过开发服务模块转换验证 inline 样式和 HMR 关联，无需打开页面。

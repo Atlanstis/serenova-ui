@@ -18,6 +18,17 @@ pnpm add serenova-ui
 
 组件使用时自动加载所需样式，无需单独导入 CSS；无 Provider 时回退内置浅色主题。仅支持浏览器客户端渲染，不支持 SSR 或 hydration。原有 `serenova-ui/style.css` 和 `serenova-ui/button/style.css` 已移除，请删除旧导入。
 
+### ESM 迁移
+
+组件库仅发布 ESM，移除 CommonJS `.cjs` 产物及包根、各 JavaScript 子路径的 `require` 入口，这是破坏性变更。原使用 `require('serenova-ui')` 或 `require('serenova-ui/button')` 的消费方，请在 ESM 模块中改用：
+
+```ts
+import SerenovaUI from 'serenova-ui'
+import { SButton } from 'serenova-ui/button'
+```
+
+消费工程需支持 ESM 导入，并移除对内部 `.cjs` 文件的依赖。Node 中的 ESM 加载检查只验证发布入口，不代表支持 SSR 或 hydration。
+
 ### 全量安装
 
 ```ts
@@ -153,12 +164,12 @@ tests/                  # 自动化测试与测试基础设施工作区
 
 ### 测试分层
 
-| 层级                 | 目录                         | 命令                    | 覆盖范围                                                            |
-| -------------------- | ---------------------------- | ----------------------- | ------------------------------------------------------------------- |
-| 快速单元测试         | `tests/components`、`shared` | `pnpm test:unit`        | Props、Slots、Events、状态、公共类型和安装辅助                      |
-| 真实浏览器集成测试   | `tests/components`           | `pnpm test:integration` | 原生行为、焦点、键盘、布局、尺寸、样式和组件协作                    |
-| 消费应用 E2E         | `tests/e2e`                  | `pnpm test:e2e`         | 当前 dist 的公共安装、样式加载和代表性关键用户流程                  |
-| 独立发布产物契约测试 | `tests/contracts/package`    | `pnpm test:package`     | ESM、CommonJS、自动样式及旧 CSS 路径拒绝、插件、公共类型和 npm 内容 |
+| 层级                 | 目录                         | 命令                    | 覆盖范围                                                  |
+| -------------------- | ---------------------------- | ----------------------- | --------------------------------------------------------- |
+| 快速单元测试         | `tests/components`、`shared` | `pnpm test:unit`        | Props、Slots、Events、状态、公共类型和安装辅助            |
+| 真实浏览器集成测试   | `tests/components`           | `pnpm test:integration` | 原生行为、焦点、键盘、布局、尺寸、样式和组件协作          |
+| 消费应用 E2E         | `tests/e2e`                  | `pnpm test:e2e`         | 当前 dist 的公共安装、样式加载和代表性关键用户流程        |
+| 独立发布产物契约测试 | `tests/contracts/package`    | `pnpm test:package`     | ESM、自动样式及旧 CSS 路径拒绝、插件、公共类型和 npm 内容 |
 
 各测试层的职责边界、当前覆盖项与新增用例约定详见 [`tests/README.md`](./tests/README.md)。
 
@@ -187,11 +198,10 @@ pnpm build
 ```text
 dist/
 ├── serenova-ui.js
-├── serenova-ui.cjs
 ├── index.d.ts
-├── button/             # JS、CommonJS、声明与内嵌样式
-├── theme-provider/     # JS、CommonJS 与声明
-├── icons/              # 图标集合 ESM/CommonJS
+├── button/             # ESM、声明与内嵌样式
+├── theme-provider/     # ESM 与声明
+├── icons/              # 图标集合 ESM
 ├── themes/             # 浅色预设与声明
 └── ...共享模块（包含组件自动样式）
 ```

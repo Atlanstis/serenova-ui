@@ -14,8 +14,8 @@ export default defineConfig({
         'themes/light': 'src/theme/presets/light.ts',
         'icons/index': 'src/components/icon/index.ts',
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, name) => `${name}.${format === 'es' ? 'js' : 'cjs'}`,
+      formats: ['es'],
+      fileName: (_format, name) => `${name}.js`,
     },
     rolldownOptions: {
       external: ['vue'],

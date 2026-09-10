@@ -22,17 +22,22 @@
 
 ### Requirement: 发布模块、样式与类型产物
 
-组件库 MUST 生成与 `package.json` 导出映射一致的 ESM、CommonJS 和 TypeScript 声明产物；组件基础样式 MUST 随 JS 自动加载，MUST 不发布独立 CSS 文件或 CSS 公共子路径。
+组件库 MUST 生成与 `package.json` 导出映射一致的 ESM 和 TypeScript 声明产物；发布包 MUST 不包含 CommonJS `.cjs` 产物；包根与公共 JavaScript 子路径 MUST 仅提供 `types` 和 `import` 导出条件，MUST 不提供 `require` 条件或 CommonJS 兼容入口；`main` 与 `module` MUST 指向包根 ESM 产物，包 MUST 声明 `type: module`。组件基础样式 MUST 随 JS 自动加载，MUST 不发布独立 CSS 文件或 CSS 公共子路径。
 
 #### Scenario: ESM 使用者加载组件库
 
 - **WHEN** ESM 项目仅导入并在客户端使用 `serenova-ui`
 - **THEN** 模块和类型声明可被正确解析，组件样式自动加载，无需显式 CSS 导入
 
+#### Scenario: 检查仅 ESM 发布边界
+
+- **WHEN** 检查发布包及包根、button、theme-provider、themes/light、icons 入口的导出映射
+- **THEN** JavaScript 产物仅为 ESM，不包含 `.cjs` 文件，各 JavaScript 入口仅有 `types` 和 `import` 条件，`main` 与 `module` 指向包根 ESM 产物
+
 #### Scenario: CommonJS 使用者加载组件库
 
-- **WHEN** CommonJS 环境通过包根入口加载 `serenova-ui`
-- **THEN** 环境解析到 CommonJS 产物且公共导出与 ESM 入口一致
+- **WHEN** 消费方使用 `require('serenova-ui')` 或通过 `require` 加载公共 JavaScript 子路径
+- **THEN** 导出映射不提供匹配的运行时入口，消费方须切换为 ESM 导入
 
 ### Requirement: Vue 作为外部对等依赖
 
@@ -54,7 +59,7 @@
 
 ### Requirement: 提供可执行的使用与发布文档
 
-README SHALL 说明安装、全量与按需使用、自动样式加载、旧 CSS 入口删除的迁移步骤、仅客户端支持边界、本地开发、测试、构建、包内容检查和 npm 发布步骤；单个组件的 API 与交互说明 SHALL 由 Storybook Docs 提供。
+README SHALL 明确仅发布 ESM，并说明 CommonJS 使用者改用 ESM 导入的迁移方式；README SHALL 说明安装、全量与按需使用、自动样式加载、旧 CSS 入口删除的迁移步骤、仅客户端支持边界、本地开发、测试、构建、包内容检查和 npm 发布步骤；单个组件的 API 与交互说明 SHALL 由 Storybook Docs 提供。
 
 #### Scenario: 新使用者阅读 README
 
@@ -66,9 +71,14 @@ README SHALL 说明安装、全量与按需使用、自动样式加载、旧 CSS
 - **WHEN** 维护者按照 README 执行发布前命令
 - **THEN** 类型检查、测试、构建和包内容检查在实际发布前全部完成
 
+#### Scenario: 查阅模块格式迁移说明
+
+- **WHEN** 原 CommonJS 消费方阅读 README
+- **THEN** 文档明确 CJS 产物和 `require` 入口已移除，并给出 ESM 导入方式
+
 ### Requirement: 支持组件与主题的独立公共子路径
 
-组件库 MUST 提供 `serenova-ui/button`、`serenova-ui/theme-provider`、`serenova-ui/icons` 的 ESM、CommonJS 与类型入口。MUST 提供 `serenova-ui/themes/light` 的预设及对应类型入口，MUST NOT 提供 `serenova-ui/themes/dark`。六个图标及 `IconProps` MUST 同时从包根和 icons 集合入口具名导出；MUST NOT 提供 `serenova-ui/icons/add` 等单图标子路径或通配导出。无视觉规则的主题提供者和内联图标 SHALL 不要求独立 CSS。包根组件、插件及 Provider 公共类型 MUST 保留，默认插件 SHALL 注册六个图标，每个图标 SHALL 支持单组件 app.use 安装。
+组件库 MUST 提供 `serenova-ui/button`、`serenova-ui/theme-provider`、`serenova-ui/icons` 的 ESM 与类型入口。MUST 提供 `serenova-ui/themes/light` 的预设及对应类型入口，MUST NOT 提供 `serenova-ui/themes/dark`。六个图标及 `IconProps` MUST 同时从包根和 icons 集合入口具名导出；MUST NOT 提供 `serenova-ui/icons/add` 等单图标子路径或通配导出。无视觉规则的主题提供者和内联图标 SHALL 不要求独立 CSS。包根组件、插件及 Provider 公共类型 MUST 保留，默认插件 SHALL 注册六个图标，每个图标 SHALL 支持单组件 app.use 安装。
 
 #### Scenario: 按需消费按钮
 
@@ -116,12 +126,12 @@ README SHALL 说明安装、全量与按需使用、自动样式加载、旧 CSS
 
 #### Scenario: Node 消费模块
 
-- **WHEN** Node 通过 ESM 或 CommonJS 加载包根、组件、提供者和预设入口
+- **WHEN** Node 通过 ESM 加载包根、组件、提供者和预设入口
 - **THEN** 加载成功且不需要 CSS loader 或浏览器全局对象
 
 ### Requirement: 组件渲染仅支持浏览器客户端
 
-组件库 MUST 明确仅支持客户端渲染，MUST 不提供 SSR、服务端首屏样式收集或 hydration 支持承诺，MUST 不新增 SSR 公共子路径。保留 Node 模块加载和 ESM/CommonJS 发布验证 SHALL 不构成服务端渲染支持。
+组件库 MUST 明确仅支持客户端渲染，MUST 不提供 SSR、服务端首屏样式收集或 hydration 支持承诺，MUST 不新增 SSR 公共子路径。保留 Node 模块加载和 ESM 发布验证 SHALL 不构成服务端渲染支持。
 
 #### Scenario: 确认支持边界
 

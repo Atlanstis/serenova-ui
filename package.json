@@ -19,35 +19,30 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/serenova-ui.cjs",
+  "main": "./dist/serenova-ui.js",
   "module": "./dist/serenova-ui.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/serenova-ui.js",
-      "require": "./dist/serenova-ui.cjs"
+      "import": "./dist/serenova-ui.js"
     },
     "./package.json": "./package.json",
     "./button": {
       "types": "./dist/components/button/index.d.ts",
-      "import": "./dist/button/index.js",
-      "require": "./dist/button/index.cjs"
+      "import": "./dist/button/index.js"
     },
     "./theme-provider": {
       "types": "./dist/components/theme-provider/index.d.ts",
-      "import": "./dist/theme-provider/index.js",
-      "require": "./dist/theme-provider/index.cjs"
+      "import": "./dist/theme-provider/index.js"
     },
     "./themes/light": {
       "types": "./dist/theme/presets/light.d.ts",
-      "import": "./dist/themes/light.js",
-      "require": "./dist/themes/light.cjs"
+      "import": "./dist/themes/light.js"
     },
     "./icons": {
       "types": "./dist/components/icon/index.d.ts",
-      "import": "./dist/icons/index.js",
-      "require": "./dist/icons/index.cjs"
+      "import": "./dist/icons/index.js"
     }
   },
   "sideEffects": false,
