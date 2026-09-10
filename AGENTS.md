@@ -10,9 +10,8 @@
 
 ## 运行环境与渲染支持
 
-- 当前组件库仅支持浏览器客户端渲染，不支持 SSR 或 hydration。
+- 组件库仅以 ESM 格式发布，仅支持浏览器客户端渲染，不支持 SSR 或 hydration。
 - 后续公共组件的设计、实现和测试无需考虑 SSR、服务端首屏样式收集、服务端请求隔离或 hydration；不得为这些能力新增适配、公共 API 或专用测试。
-- 组件库仅发布 ESM，不提供 CommonJS 产物或 `require` 入口。Node 中的 ESM 模块加载属于发布契约检查，不代表支持服务端组件渲染；客户端多应用隔离、局部主题、Teleport 和真实交互契约继续保留。
 
 ## 按任务读取的规范
 
@@ -21,4 +20,5 @@
 - 设计、新增、修改或评审公共组件：阅读 [组件开发规范](docs/contributing/components.md) 和 [测试规范](docs/contributing/testing.md)。
 - 新增、修改或评审测试、构建、发布配置或公共导出：阅读 [测试规范](docs/contributing/testing.md)。
 - 编写 Git 提交信息：阅读 [提交规范](docs/contributing/commits.md)。
+- 使用 OpenSpec 技能：阅读 [OpenSpec 使用规范](docs/contributing/openspec.md)。
 - 使用 Figma 设计参考：阅读 [设计参考](docs/design/figma.md)。
